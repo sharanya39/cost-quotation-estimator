@@ -1,6 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { formatINR } from "@/utils/calculations";
+import { useCostEstimation } from "@/contexts/CostEstimationContext";
 
 interface QuotationResultsProps {
   l5Costs: {
@@ -11,6 +12,9 @@ interface QuotationResultsProps {
 }
 
 const QuotationResults = ({ l5Costs }: QuotationResultsProps) => {
+  const { currentItemIndex, materialItems } = useCostEstimation();
+  const currentItem = materialItems[currentItemIndex];
+
   return (
     <div className="bg-blue-50 p-6 rounded-lg">
       <h3 className="font-semibold mb-4 text-blue-800">Quotation Results</h3>
@@ -26,7 +30,7 @@ const QuotationResults = ({ l5Costs }: QuotationResultsProps) => {
         </div>
         
         <div className="pt-4 border-t border-blue-200">
-          <p className="text-sm text-gray-500">Total Quotation Cost</p>
+          <p className="text-sm text-gray-500">Total Quotation Cost ({currentItem?.quantity} pieces)</p>
           <p className="text-3xl font-bold text-blue-800">{formatINR(l5Costs.totalQuotationCost)}</p>
         </div>
       </div>
