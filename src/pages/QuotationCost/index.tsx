@@ -42,6 +42,7 @@ const QuotationCost = () => {
   });
   
   useEffect(() => {
+    // Calculate L5 cost using the updated formula
     const l5CostPerKg = calculateL5Cost(
       existingBreakdown.l4CostPerKg || 0,
       humanIntervention.profitMarginPercentage,
@@ -90,7 +91,7 @@ const QuotationCost = () => {
     if (currentItemIndex < materialItems.length - 1) {
       setCurrentItemIndex(currentItemIndex + 1);
     } else {
-      alert("All items have been processed. You can now download the final quotation.");
+      navigate("/final-quotation"); // Navigate to final quotation after last item
     }
   };
   

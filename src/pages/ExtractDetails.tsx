@@ -1,12 +1,8 @@
-
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import Navigation from "@/components/layout/Navigation";
-import { useCostEstimation, engineeringTable, materialTable } from "@/contexts/CostEstimationContext";
+import { useCostEstimation } from "@/contexts/CostEstimationContext";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Label } from "@/components/ui/label";
 import { FileText, Info } from "lucide-react";
 
 const ExtractDetails = () => {
@@ -22,11 +18,10 @@ const ExtractDetails = () => {
   };
   
   const handleNonTechnical = () => {
-    // This could navigate to a different page or show a different view
     if (accessLevel === "basic") {
       navigate("/plans");
     } else {
-      navigate("/material-cost");
+      navigate("/final-quotation");
     }
   };
   

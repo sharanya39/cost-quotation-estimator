@@ -1,4 +1,3 @@
-
 // Calculate setup time per piece
 export const calculateSetupTimePerPiece = (setupTimePerBatch: number, batchQuantity: number): number => {
   return setupTimePerBatch / batchQuantity;
@@ -53,7 +52,9 @@ export const calculateL5Cost = (
   negotiationPercentage: number,
   freightPerKg: number
 ): number => {
-  return l4Cost * (1 + profitMarginPercentage / 100) + l4Cost * (negotiationPercentage / 100) + freightPerKg;
+  const baseL5Cost = l4Cost * (1 + (profitMarginPercentage + negotiationPercentage) / 100);
+  // Freight is added separately for transparency
+  return baseL5Cost + freightPerKg;
 };
 
 // Extract median price from price range string

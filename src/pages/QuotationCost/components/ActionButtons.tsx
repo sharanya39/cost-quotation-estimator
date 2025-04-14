@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Download, RefreshCw, FileText, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface ActionButtonsProps {
   onStartNew: () => void;
@@ -17,6 +18,8 @@ const ActionButtons = ({
   onDownload,
   isLastItem
 }: ActionButtonsProps) => {
+  const navigate = useNavigate();
+  
   return (
     <div className="flex flex-wrap justify-between gap-4">
       <div className="space-x-2">
@@ -43,10 +46,10 @@ const ActionButtons = ({
         <Button 
           onClick={onNextItem}
           disabled={isLastItem}
-          className="flex items-center"
+          className="flex items-center bg-[#00BFB3] hover:bg-[#00BFB3]/90"
         >
           <ChevronRight className="mr-2 h-4 w-4" />
-          Estimate Next Item
+          {isLastItem ? 'Go to Final Quotation' : 'Estimate Next Item'}
         </Button>
         
         <Button 
