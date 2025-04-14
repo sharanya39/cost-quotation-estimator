@@ -20,6 +20,7 @@ import ProductionCost from "./pages/ProductionCost";
 import ShouldCost from "./pages/ShouldCost";
 import QuotationCost from "./pages/QuotationCost";
 import NotFound from "./pages/NotFound";
+import FinalQuotation from "./pages/FinalQuotation";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/production-cost" element={<ProductionCost />} />
             <Route path="/should-cost" element={<ShouldCost />} />
             <Route path="/quotation-cost" element={<QuotationCost />} />
+            <Route path="/final-quotation" element={<FinalQuotation />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
