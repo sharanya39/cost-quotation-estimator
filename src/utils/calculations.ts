@@ -49,12 +49,14 @@ export const calculateL4Cost = (l3Cost: number, commercialOverheadPercentage: nu
 export const calculateL5Cost = (
   l4Cost: number,
   profitMarginPercentage: number,
-  negotiationPercentage: number,
-  freightPerKg: number
+  negotiationPercentage: number
 ): number => {
-  const baseL5Cost = l4Cost * (1 + (profitMarginPercentage + negotiationPercentage) / 100);
-  // Freight is added separately for transparency
-  return baseL5Cost + freightPerKg;
+  return l4Cost * (1 + (profitMarginPercentage + negotiationPercentage) / 100);
+};
+
+// Separate function for freight cost
+export const calculateFreightCost = (weight: number, freightPerKg: number): number => {
+  return weight * freightPerKg;
 };
 
 // Extract median price from price range string

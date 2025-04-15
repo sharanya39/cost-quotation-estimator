@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, ReactNode } from "react";
 
 // Define types for our data
@@ -103,6 +102,7 @@ interface CostEstimationContextType {
 // Reference tables
 export const materialTable = [
   { 
+    partNumber: "3011",
     title: "Hydraulic cylinder spacer",
     drawingNumber: "DWG 3494",
     material: "Stainless Steel 316",
@@ -110,6 +110,7 @@ export const materialTable = [
     itemWeight: 0.8
   },
   { 
+    partNumber: "3012",
     title: "Brake",
     drawingNumber: "DWG 5632",
     material: "Aluminum 7075-T6",
@@ -117,6 +118,7 @@ export const materialTable = [
     itemWeight: 0.5
   },
   { 
+    partNumber: "3013",
     title: "Precision component",
     drawingNumber: "DWG 1324",
     material: "Stainless Steel 304",

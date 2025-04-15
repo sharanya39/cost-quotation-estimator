@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
@@ -42,12 +41,11 @@ const QuotationCost = () => {
   });
   
   useEffect(() => {
-    // Calculate L5 cost using the updated formula
+    // Calculate L5 cost without freight
     const l5CostPerKg = calculateL5Cost(
       existingBreakdown.l4CostPerKg || 0,
       humanIntervention.profitMarginPercentage,
-      humanIntervention.negotiationPercentage,
-      humanIntervention.freightPerKg
+      humanIntervention.negotiationPercentage
     );
     
     const l5CostPerPiece = l5CostPerKg * (currentItem?.unitWeight || 1);
@@ -58,13 +56,7 @@ const QuotationCost = () => {
       l5CostPerPiece,
       totalQuotationCost
     });
-  }, [
-    existingBreakdown, 
-    humanIntervention.profitMarginPercentage,
-    humanIntervention.negotiationPercentage,
-    humanIntervention.freightPerKg,
-    currentItem
-  ]);
+  }, [existingBreakdown, humanIntervention, currentItem]);
   
   const handleSaveQuotation = () => {
     const updatedBreakdown = {
