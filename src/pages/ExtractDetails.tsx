@@ -1,9 +1,13 @@
+
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import Navigation from "@/components/layout/Navigation";
-import { useCostEstimation } from "@/contexts/CostEstimationContext";
+import { useCostEstimation, materialTable, engineeringTable } from "@/contexts/CostEstimationContext";
 import { Button } from "@/components/ui/button";
 import { FileText, Info } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 
 const ExtractDetails = () => {
   const navigate = useNavigate();
@@ -121,7 +125,7 @@ const ExtractDetails = () => {
             <div className="mt-8 flex flex-col md:flex-row justify-center gap-4">
               <Button 
                 onClick={handleTechnical}
-                className="flex items-center"
+                className="flex items-center bg-[#00BFB3] hover:bg-[#00BFB3]/90"
                 size="lg"
               >
                 <FileText className="mr-2 h-5 w-5" />

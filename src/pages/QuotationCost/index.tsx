@@ -5,12 +5,12 @@ import PageLayout from "@/components/layout/PageLayout";
 import Navigation from "@/components/layout/Navigation";
 import { useCostEstimation } from "@/contexts/CostEstimationContext";
 import { calculateL5Cost } from "@/utils/calculations";
-import { exportToExcel } from "@/utils/exportUtils";
+import { Button } from "@/components/ui/button";
+import { ChevronRight } from "lucide-react";
 
 import QuotationFormula from "./components/QuotationFormula";
 import QuotationResults from "./components/QuotationResults";
 import CostSummaryTable from "./components/CostSummaryTable";
-import ActionButtons from "./components/ActionButtons";
 
 const QuotationCost = () => {
   const navigate = useNavigate();
@@ -85,7 +85,7 @@ const QuotationCost = () => {
     setCostBreakdowns(updatedBreakdowns);
   };
   
-  const handleNextItem = () => {
+  const handleNextPage = () => {
     handleSaveQuotation();
     
     if (currentItemIndex < materialItems.length - 1) {
@@ -93,19 +93,6 @@ const QuotationCost = () => {
     } else {
       navigate("/final-quotation"); // Navigate to final quotation after last item
     }
-  };
-  
-  const handleDownload = () => {
-    handleSaveQuotation();
-    exportToExcel(materialItems, costBreakdowns);
-  };
-  
-  const handleStartNew = () => {
-    navigate("/");
-  };
-  
-  const handleGoToBOM = () => {
-    navigate("/bill-of-materials");
   };
 
   return (
@@ -141,13 +128,15 @@ const QuotationCost = () => {
           quantity={currentItem?.quantity || 0}
         />
         
-        <ActionButtons 
-          onStartNew={handleStartNew}
-          onGoToBOM={handleGoToBOM}
-          onNextItem={handleNextItem}
-          onDownload={handleDownload}
-          isLastItem={currentItemIndex >= materialItems.length - 1}
-        />
+        <div className="flex justify-end mt-6">
+          <Button 
+            onClick={handleNextPage}
+            className="flex items-center bg-[#00BFB3] hover:bg-[#00BFB3]/90"
+          >
+            <ChevronRight className="mr-2 h-4 w-4" />
+            {currentItemIndex >= materialItems.length - 1 ? 'Go to Final Quotation' : 'Next Item'}
+          </Button>
+        </div>
       </div>
     </PageLayout>
   );
