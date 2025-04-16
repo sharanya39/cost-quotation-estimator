@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { formatINR } from "@/utils/calculations";
-import { CostBreakdown } from "@/contexts/CostEstimationContext";
+import { CostBreakdown } from "@/types/cost-estimation";
 
 interface CostSummaryTableProps {
   existingBreakdown: CostBreakdown;
