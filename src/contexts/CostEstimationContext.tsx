@@ -7,7 +7,8 @@ import {
   HumanIntervention,
   EngineeringDetails,
   ManufacturingProcess,
-  CostBreakdown
+  CostBreakdown,
+  TargetCostItem
 } from "../types/cost-estimation";
 import { materialTable, engineeringTable } from "../data/reference-data";
 
@@ -42,6 +43,8 @@ export const CostEstimationProvider = ({ children }: { children: ReactNode }) =>
   const [engineeringDetails, setEngineeringDetails] = useState<EngineeringDetails[]>([]);
   const [manufacturingProcesses, setManufacturingProcesses] = useState<ManufacturingProcess[]>([]);
   const [costBreakdowns, setCostBreakdowns] = useState<CostBreakdown[]>([]);
+  const [targetCostItems, setTargetCostItems] = useState<TargetCostItem[]>([]);
+  const [contractValue, setContractValue] = useState<number>(9000);
 
   const addMaterialItem = (item: MaterialItem) => {
     setMaterialItems(prev => [...prev, item]);
@@ -84,7 +87,11 @@ export const CostEstimationProvider = ({ children }: { children: ReactNode }) =>
     costBreakdowns,
     setCostBreakdowns,
     addCostBreakdown,
-    getCurrentCostBreakdown
+    getCurrentCostBreakdown,
+    targetCostItems,
+    setTargetCostItems,
+    contractValue,
+    setContractValue
   };
 
   return (
@@ -105,4 +112,3 @@ export const useCostEstimation = () => {
 
 // Export reference data
 export { materialTable, engineeringTable };
-export type { CostEstimationContextType };

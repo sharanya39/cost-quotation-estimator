@@ -65,3 +65,22 @@ export interface CostBreakdown {
   l5CostPerPiece?: number;
   totalQuotationCost?: number;
 }
+
+export interface TargetCostItem {
+  itemNumber: string;
+  itemDescription: string;
+  itemSpec: string;
+  weightPerPiece: number;
+  ratePerKg: number;
+  ratePerPiece: number;
+  quotedQty: number;
+  quotedL1Cost: number;
+  targetRatePerKg: number;
+  targetRatePerPiece: number;
+  orderedQty: number;
+  targetL1Cost: number;
+  targetL5CostPerKg?: number;
+  targetL5CostPerPiece?: number;
+  totalTargetL5Cost?: number;
+  profitEnvisaged?: number;
+}

@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +22,7 @@ import ShouldCost from "./pages/ShouldCost";
 import QuotationCost from "./pages/QuotationCost";
 import NotFound from "./pages/NotFound";
 import FinalQuotation from "./pages/FinalQuotation";
+import TargetCostEstimation from "./pages/TargetCostEstimation";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +48,7 @@ const App = () => (
             <Route path="/should-cost" element={<ShouldCost />} />
             <Route path="/quotation-cost" element={<QuotationCost />} />
             <Route path="/final-quotation" element={<FinalQuotation />} />
+            <Route path="/target-cost-estimation" element={<TargetCostEstimation />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -1,7 +1,6 @@
 import * as XLSX from 'xlsx';
-import { MaterialItem, CostBreakdown } from '../contexts/CostEstimationContext';
+import { MaterialItem, CostBreakdown, HumanIntervention } from '../types/cost-estimation';
 import { calculateFreightCost } from './calculations';
-import { HumanIntervention } from '../contexts/CostEstimationContext';
 
 interface FinalEstimationItem {
   sno: number;

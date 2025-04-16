@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const ProjectDetails = () => {
   const navigate = useNavigate();
-  const { projectDetails, setProjectDetails } = useCostEstimation();
+  const { projectDetails, setProjectDetails, targetCostItems, setContractValue } = useCostEstimation();
   const [formState, setFormState] = useState({
     customerName: projectDetails.customerName || "",
     customerId: projectDetails.customerId || "",
@@ -19,6 +19,7 @@ const ProjectDetails = () => {
     projectId: projectDetails.projectId || "",
     location: projectDetails.location || "",
     firmPrice: projectDetails.firmPrice || false,
+    contractValue: 9000, // Default contract value
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,8 +40,14 @@ const ProjectDetails = () => {
       location: formState.location,
       firmPrice: formState.firmPrice,
     });
+    
+    setContractValue(Number(formState.contractValue));
 
-    navigate("/bill-of-materials");
+    if (action === "target" && targetCostItems.length > 0) {
+      navigate("/target-cost-estimation");
+    } else {
+      navigate("/bill-of-materials");
+    }
   };
 
   const isFormValid = () => {
@@ -130,6 +137,18 @@ const ProjectDetails = () => {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="contractValue">Contract Value</Label>
+            <Input
+              id="contractValue"
+              name="contractValue"
+              type="number"
+              value={formState.contractValue}
+              onChange={handleInputChange}
+              placeholder="Enter contract value"
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="firmPrice">Firm Price</Label>
             <RadioGroup
               value={formState.firmPrice ? "yes" : "no"}
@@ -158,7 +177,7 @@ const ProjectDetails = () => {
           </Button>
           <Button
             onClick={() => handleSubmit("target")}
-            disabled={!isFormValid()}
+            disabled={!isFormValid() || targetCostItems.length === 0}
             variant="outline"
             className="w-48"
           >

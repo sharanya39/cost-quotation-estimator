@@ -5,7 +5,8 @@ import {
   HumanIntervention,
   EngineeringDetails,
   ManufacturingProcess,
-  CostBreakdown
+  CostBreakdown,
+  TargetCostItem
 } from "../types/cost-estimation";
 
 export interface CostEstimationContextType {
@@ -30,4 +31,8 @@ export interface CostEstimationContextType {
   setCostBreakdowns: (breakdowns: CostBreakdown[]) => void;
   addCostBreakdown: (breakdown: CostBreakdown) => void;
   getCurrentCostBreakdown: () => CostBreakdown | undefined;
+  targetCostItems: TargetCostItem[];
+  setTargetCostItems: (items: TargetCostItem[]) => void;
+  contractValue: number;
+  setContractValue: (value: number) => void;
 }

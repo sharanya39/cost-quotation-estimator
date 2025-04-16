@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import Navigation from "@/components/layout/Navigation";
@@ -9,6 +10,7 @@ import { Download, RefreshCw, ChevronRight } from "lucide-react";
 import { exportToExcel } from "@/utils/exportUtils";
 import { format } from "date-fns";
 import { calculateFreightCost } from "@/utils/calculations";
+import { toast } from "@/components/ui/use-toast";
 
 const FinalQuotation = () => {
   const navigate = useNavigate();
@@ -17,7 +19,10 @@ const FinalQuotation = () => {
     materialItems, 
     costBreakdowns,
     humanIntervention,
-    setCurrentItemIndex
+    setCurrentItemIndex,
+    currentItemIndex,
+    targetCostItems,
+    setTargetCostItems
   } = useCostEstimation();
 
   const totalQuantity = materialItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -28,11 +33,30 @@ const FinalQuotation = () => {
   };
 
   const handleStartNew = () => {
+    // Navigate to home page to restart the flow
     navigate("/");
   };
 
   const handleNextItem = () => {
-    setCurrentItemIndex(0);
+    if (materialItems.length <= 1) {
+      toast({
+        title: "Estimation Complete",
+        description: "Estimation done for the given item.",
+        variant: "default",
+      });
+      return;
+    }
+    
+    // If there are more items in the BOM
+    if (currentItemIndex < materialItems.length - 1) {
+      // Move to next item
+      setCurrentItemIndex(currentItemIndex + 1);
+    } else {
+      // Reset to the first item if we've gone through all items
+      setCurrentItemIndex(0);
+    }
+    
+    // Go to Bill of Materials page
     navigate("/bill-of-materials");
   };
 
@@ -122,6 +146,45 @@ const FinalQuotation = () => {
                   {materialItems.map((item, index) => {
                     const cost = costBreakdowns[index];
                     const freightCost = calculateFreightCost(item.unitWeight, humanIntervention.freightPerKg);
+                    
+                    // Generate target cost items for each material item
+                    if (!targetCostItems[index] && cost) {
+                      const targetCostPercentage = 88; // 88% as specified
+                      const targetRatePerKg = (cost.l1CostPerKg * targetCostPercentage) / 100;
+                      const targetRatePerPiece = targetRatePerKg * item.unitWeight;
+                      const targetL1Cost = targetRatePerPiece * item.quantity;
+                      const targetL5CostPerKg = cost.l3CostPerKg 
+                        ? (targetRatePerKg + cost.l3CostPerKg) + (targetRatePerKg + cost.l3CostPerKg) * (humanIntervention.profitMarginPercentage / 100)
+                        : 0;
+                      const targetL5CostPerPiece = targetL5CostPerKg * item.unitWeight;
+                      const totalTargetL5Cost = targetL5CostPerPiece * item.quantity;
+                      const finalQuotedCost = (cost.l5CostPerPiece || 0) * item.quantity;
+                      const profitEnvisaged = finalQuotedCost > 0 ? (finalQuotedCost - totalTargetL5Cost) / finalQuotedCost : 0;
+
+                      const newTargetItem = {
+                        itemNumber: item.itemPartNumber,
+                        itemDescription: item.itemDescription,
+                        itemSpec: item.material || "",
+                        weightPerPiece: item.unitWeight,
+                        ratePerKg: cost.l1CostPerKg,
+                        ratePerPiece: cost.l1CostPerPiece,
+                        quotedQty: item.quantity,
+                        quotedL1Cost: cost.l1CostPerKg * item.quantity,
+                        targetRatePerKg,
+                        targetRatePerPiece,
+                        orderedQty: item.quantity,
+                        targetL1Cost,
+                        targetL5CostPerKg,
+                        targetL5CostPerPiece,
+                        totalTargetL5Cost,
+                        profitEnvisaged
+                      };
+
+                      // Add to target cost items
+                      const updatedTargetItems = [...targetCostItems];
+                      updatedTargetItems[index] = newTargetItem;
+                      setTargetCostItems(updatedTargetItems);
+                    }
                     
                     return (
                       <TableRow key={index}>

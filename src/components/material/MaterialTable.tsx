@@ -1,5 +1,5 @@
 
-import { MaterialItem } from "@/contexts/CostEstimationContext";
+import { MaterialItem } from "@/types/cost-estimation";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import MaterialTableRow from "./MaterialTableRow";
 

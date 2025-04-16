@@ -45,7 +45,7 @@ export const calculateL4Cost = (l3Cost: number, commercialOverheadPercentage: nu
   return l3Cost * (1 + commercialOverheadPercentage / 100);
 };
 
-// Calculate L5 cost (Quotation Cost)
+// Calculate L5 cost (Quotation Cost) - Without freight
 export const calculateL5Cost = (
   l4Cost: number,
   profitMarginPercentage: number,
@@ -57,6 +57,32 @@ export const calculateL5Cost = (
 // Separate function for freight cost
 export const calculateFreightCost = (weight: number, freightPerKg: number): number => {
   return weight * freightPerKg;
+};
+
+// Calculate target rate per kg
+export const calculateTargetRatePerKg = (
+  ratePerKg: number,
+  targetCostPercentage: number
+): number => {
+  return ratePerKg * (targetCostPercentage / 100);
+};
+
+// Calculate target L5 cost per kg
+export const calculateTargetL5CostPerKg = (
+  targetRatePerKg: number,
+  quotedL3CostPerKg: number,
+  profitMarginPercentage: number
+): number => {
+  return (targetRatePerKg + quotedL3CostPerKg) + 
+         (targetRatePerKg + quotedL3CostPerKg) * (profitMarginPercentage / 100);
+};
+
+// Calculate profit envisaged
+export const calculateProfitEnvisaged = (
+  finalQuotedCost: number,
+  totalTargetL5Cost: number
+): number => {
+  return (finalQuotedCost - totalTargetL5Cost) / finalQuotedCost;
 };
 
 // Extract median price from price range string
