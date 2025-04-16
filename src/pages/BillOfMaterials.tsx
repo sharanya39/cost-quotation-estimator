@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
@@ -40,8 +39,9 @@ const BillOfMaterials = () => {
     }
 
     if (field === "itemPartNumber") {
+      const partNumber = String(value);
       const matchedMaterial = materialTable.find(
-        (material) => material.partNumber === value
+        (material) => material.partNumber === partNumber
       );
 
       if (matchedMaterial) {
@@ -51,7 +51,7 @@ const BillOfMaterials = () => {
           unitWeight: matchedMaterial.itemWeight,
           material: matchedMaterial.material,
           priceRange: matchedMaterial.priceRange,
-          itemPartNumber: value,
+          itemPartNumber: partNumber,
         };
       }
     }

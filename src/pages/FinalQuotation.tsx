@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Download, RefreshCw, ChevronRight } from "lucide-react";
 import { exportToExcel } from "@/utils/exportUtils";
 import { format } from "date-fns";
+import { calculateFreightCost } from "@/utils/calculations";
 
 const FinalQuotation = () => {
   const navigate = useNavigate();
