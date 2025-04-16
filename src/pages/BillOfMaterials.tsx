@@ -5,9 +5,8 @@ import PageLayout from "@/components/layout/PageLayout";
 import Navigation from "@/components/layout/Navigation";
 import { useCostEstimation, materialTable } from "@/contexts/CostEstimationContext";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
+import MaterialTable from "@/components/material/MaterialTable";
 
 const BillOfMaterials = () => {
   const navigate = useNavigate();
@@ -34,26 +33,25 @@ const BillOfMaterials = () => {
       [field]: value,
     };
 
-    // Auto-calculate total weight when unit weight or quantity changes
     if (field === "unitWeight" || field === "quantity") {
       const unitWeight = field === "unitWeight" ? Number(value) : updatedItems[index].unitWeight;
       const quantity = field === "quantity" ? Number(value) : updatedItems[index].quantity;
       updatedItems[index].totalWeight = unitWeight * quantity;
     }
 
-    // Auto-fill from material table if item description matches
-    if (field === "itemDescription") {
+    if (field === "itemPartNumber") {
       const matchedMaterial = materialTable.find(
-        (material) => material.title.toLowerCase().includes(value.toString().toLowerCase())
+        (material) => material.partNumber === value
       );
 
       if (matchedMaterial) {
         updatedItems[index] = {
           ...updatedItems[index],
-          itemDescription: value.toString(),
+          itemDescription: matchedMaterial.title,
           unitWeight: matchedMaterial.itemWeight,
           material: matchedMaterial.material,
           priceRange: matchedMaterial.priceRange,
+          itemPartNumber: value,
         };
       }
     }
@@ -79,18 +77,14 @@ const BillOfMaterials = () => {
     if (items.length > 1) {
       const updatedItems = [...items];
       updatedItems.splice(index, 1);
-      
-      // Renumber items
       updatedItems.forEach((item, idx) => {
         item.itemNumber = idx + 1;
       });
-      
       setItems(updatedItems);
     }
   };
 
   const handleSubmit = () => {
-    // Filter out empty items
     const validItems = items.filter(
       (item) => item.itemPartNumber.trim() !== "" && item.itemDescription.trim() !== ""
     );
@@ -118,76 +112,11 @@ const BillOfMaterials = () => {
           </p>
         </div>
         
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-16">Item No.</TableHead>
-                <TableHead className="w-32">Part Number</TableHead>
-                <TableHead className="w-60">Item Description</TableHead>
-                <TableHead className="w-32">Unit Weight (kg)</TableHead>
-                <TableHead className="w-28">Quantity</TableHead>
-                <TableHead className="w-36">Total Weight (kg)</TableHead>
-                <TableHead className="w-20">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {items.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell>{item.itemNumber}</TableCell>
-                  <TableCell>
-                    <Input
-                      value={item.itemPartNumber}
-                      onChange={(e) => handleInputChange(index, "itemPartNumber", e.target.value)}
-                      placeholder="Part number"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Input
-                      value={item.itemDescription}
-                      onChange={(e) => handleInputChange(index, "itemDescription", e.target.value)}
-                      placeholder="Description"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      value={item.unitWeight}
-                      onChange={(e) => handleInputChange(index, "unitWeight", Number(e.target.value))}
-                      placeholder="0.0"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      value={item.quantity}
-                      onChange={(e) => handleInputChange(index, "quantity", Number(e.target.value))}
-                      placeholder="0"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      value={item.totalWeight}
-                      readOnly
-                      placeholder="0.0"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeItem(index)}
-                      disabled={items.length <= 1}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <MaterialTable
+          items={items}
+          onInputChange={handleInputChange}
+          onRemoveItem={removeItem}
+        />
         
         <div className="flex justify-between">
           <Button variant="outline" onClick={addItem} className="flex items-center">

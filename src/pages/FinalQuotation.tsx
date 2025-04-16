@@ -23,7 +23,7 @@ const FinalQuotation = () => {
   const totalWeight = materialItems.reduce((sum, item) => sum + item.totalWeight, 0);
 
   const handleDownload = () => {
-    exportToExcel(materialItems, costBreakdowns);
+    exportToExcel(materialItems, costBreakdowns, humanIntervention);
   };
 
   const handleStartNew = () => {
