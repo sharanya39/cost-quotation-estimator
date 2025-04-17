@@ -5,7 +5,7 @@ export const materialTable = [
     title: "Hydraulic cylinder spacer",
     drawingNumber: "DWG 3494",
     material: "Stainless Steel 316",
-    priceRange: "₹320 – ₹390",
+    priceRange: "₹350",
     itemWeight: 0.8
   },
   { 
@@ -13,7 +13,7 @@ export const materialTable = [
     title: "Brake",
     drawingNumber: "DWG 5632",
     material: "Aluminum 7075-T6",
-    priceRange: "₹235 – ₹670",
+    priceRange: "₹850",
     itemWeight: 0.5
   },
   { 
@@ -21,7 +21,7 @@ export const materialTable = [
     title: "Precision component",
     drawingNumber: "DWG 1324",
     material: "Stainless Steel 304",
-    priceRange: "₹250 – ₹320",
+    priceRange: "₹252",
     itemWeight: 1
   }
 ];

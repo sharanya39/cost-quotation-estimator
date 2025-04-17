@@ -1,4 +1,5 @@
 
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import Navigation from "@/components/layout/Navigation";
@@ -6,6 +7,8 @@ import { useCostEstimation } from "@/contexts/CostEstimationContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { formatINR } from "@/utils/calculations";
 import { Download } from "lucide-react";
 import * as XLSX from 'xlsx';
@@ -18,7 +21,8 @@ const TargetCostEstimation = () => {
     costBreakdowns,
     targetCostItems,
     humanIntervention,
-    contractValue
+    contractValue,
+    setContractValue
   } = useCostEstimation();
 
   // Calculate total quoted value from cost breakdowns
@@ -30,8 +34,26 @@ const TargetCostEstimation = () => {
     return total;
   }, 0);
 
+  // State for editable values
+  const [editableValues, setEditableValues] = useState({
+    contractValue: contractValue,
+    targetCostPercentage: 88
+  });
+
   // Calculate allocation percentage
-  const allocationPercentage = quotedValue > 0 ? (contractValue / quotedValue) * 100 : 0;
+  const allocationPercentage = quotedValue > 0 ? (editableValues.contractValue / quotedValue) * 100 : 0;
+
+  useEffect(() => {
+    // Update contract value in context when it changes
+    setContractValue(editableValues.contractValue);
+  }, [editableValues.contractValue, setContractValue]);
+
+  const handleInputChange = (field: keyof typeof editableValues, value: number) => {
+    setEditableValues(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
   
   const handleDownloadExcel = () => {
     // Create data for Excel export
@@ -66,49 +88,59 @@ const TargetCostEstimation = () => {
       <Navigation />
       
       <div className="space-y-6 bg-[#F2FCE2] p-6 rounded-lg">
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card className="bg-white/80">
-            <CardHeader>
-              <CardTitle>Contract & Quoted Values</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-2">
-                <div className="text-sm font-medium">Contract Value:</div>
-                <div>{formatINR(contractValue)}</div>
-                
-                <div className="text-sm font-medium">Quoted Value:</div>
-                <div>{formatINR(quotedValue)}</div>
-                
-                <div className="text-sm font-medium">Allocation %:</div>
-                <div>{allocationPercentage.toFixed(2)}%</div>
-                
-                <div className="text-sm font-medium">Target Cost %:</div>
-                <div>88%</div>
-
-                <div className="text-sm font-medium">Freight Cost:</div>
-                <div>{formatINR(humanIntervention.freightPerKg)} per kg</div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/80">
-            <CardHeader>
-              <CardTitle>Project Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-2">
-                <div className="text-sm font-medium">Customer Name:</div>
-                <div>{projectDetails.customerName}</div>
-                
-                <div className="text-sm font-medium">Project Name:</div>
-                <div>{projectDetails.projectName}</div>
-                
-                <div className="text-sm font-medium">Total Items:</div>
-                <div>{materialItems.length}</div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="bg-white/90">
+          <CardHeader>
+            <CardTitle>Target Cost Summary</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead></TableHead>
+                    <TableHead className="text-center bg-[#F8D49A]">Item Cost</TableHead>
+                    <TableHead className="text-center bg-[#F8D49A]">Freight Cost</TableHead>
+                    <TableHead className="text-center bg-[#F8D49A]"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-medium text-blue-800">Contract Value</TableCell>
+                    <TableCell>
+                      <Input 
+                        type="number" 
+                        value={editableValues.contractValue}
+                        onChange={(e) => handleInputChange('contractValue', Number(e.target.value))}
+                        className="max-w-[150px]"
+                      />
+                    </TableCell>
+                    <TableCell>{formatINR(humanIntervention.freightPerKg)}</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium text-blue-800">Quoted Value</TableCell>
+                    <TableCell>{formatINR(quotedValue)}</TableCell>
+                    <TableCell>{formatINR(humanIntervention.freightPerKg)}</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium text-blue-800">Allocation %</TableCell>
+                    <TableCell>{allocationPercentage.toFixed(2)}%</TableCell>
+                    <TableCell className="font-medium text-blue-800">Target cost %</TableCell>
+                    <TableCell>
+                      <Input 
+                        type="number" 
+                        value={editableValues.targetCostPercentage}
+                        onChange={(e) => handleInputChange('targetCostPercentage', Number(e.target.value))}
+                        className="max-w-[100px]"
+                      />
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card className="bg-white/80">
           <CardHeader>
@@ -119,48 +151,67 @@ const TargetCostEstimation = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead colSpan={4}></TableHead>
-                    <TableHead colSpan={4} className="text-center bg-[#F2FCE2]">Quoted Cost</TableHead>
-                    <TableHead colSpan={4} className="text-center bg-[#D3E4FD]">Target Cost</TableHead>
+                    <TableHead colSpan={7} className="text-center bg-[#F2FCE2]">Quoted Cost</TableHead>
+                    <TableHead colSpan={5} className="text-center bg-[#D3E4FD]">Target Cost</TableHead>
                   </TableRow>
                   <TableRow>
-                    <TableHead className="bg-gray-100">Item No.</TableHead>
-                    <TableHead className="bg-gray-100">Item Description</TableHead>
-                    <TableHead className="bg-gray-100">Item Spec</TableHead>
-                    <TableHead className="bg-gray-100">Wt pr pc</TableHead>
+                    <TableHead className="bg-[#F2FCE2]/80">Item No.</TableHead>
+                    <TableHead className="bg-[#F2FCE2]/80">Item Description</TableHead>
+                    <TableHead className="bg-[#F2FCE2]/80">Item Spec</TableHead>
+                    <TableHead className="bg-[#F2FCE2]/80">Wt pr pc</TableHead>
+                    <TableHead className="bg-[#F2FCE2]/80">Rate per kg</TableHead>
+                    <TableHead className="bg-[#F2FCE2]/80">Rate per pc</TableHead>
+                    <TableHead className="bg-[#F2FCE2]/80">Quoted Qty</TableHead>
                     
-                    <TableHead className="bg-[#F2FCE2]">Rate per kg</TableHead>
-                    <TableHead className="bg-[#F2FCE2]">Rate per pc</TableHead>
-                    <TableHead className="bg-[#F2FCE2]">Quoted Qty</TableHead>
-                    <TableHead className="bg-[#F2FCE2]">Quoted L1 cost</TableHead>
-                    
-                    <TableHead className="bg-[#D3E4FD]">Target Rate per kg</TableHead>
-                    <TableHead className="bg-[#D3E4FD]">Target Rate per PC</TableHead>
-                    <TableHead className="bg-[#D3E4FD]">Ordered Qty</TableHead>
-                    <TableHead className="bg-[#D3E4FD]">Target L1 cost</TableHead>
-                    <TableHead className="bg-[#D3E4FD]">Profit Envisaged</TableHead>
+                    <TableHead className="bg-[#D3E4FD]/80">Target Rate per kg</TableHead>
+                    <TableHead className="bg-[#D3E4FD]/80">Target Rate per PC</TableHead>
+                    <TableHead className="bg-[#D3E4FD]/80">Ordered Qty</TableHead>
+                    <TableHead className="bg-[#D3E4FD]/80">Target L1 cost</TableHead>
+                    <TableHead className="bg-[#D3E4FD]/80">Profit Envisaged</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {targetCostItems.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{item.itemNumber}</TableCell>
-                      <TableCell>{item.itemDescription}</TableCell>
-                      <TableCell>{item.itemSpec}</TableCell>
-                      <TableCell>{item.weightPerPiece.toFixed(2)}</TableCell>
-                      
-                      <TableCell className="bg-[#F2FCE2]/50">₹{item.ratePerKg.toFixed(2)}</TableCell>
-                      <TableCell className="bg-[#F2FCE2]/50">₹{item.ratePerPiece.toFixed(2)}</TableCell>
-                      <TableCell className="bg-[#F2FCE2]/50">{item.quotedQty}</TableCell>
-                      <TableCell className="bg-[#F2FCE2]/50">₹{item.quotedL1Cost.toFixed(2)}</TableCell>
-                      
-                      <TableCell className="bg-[#D3E4FD]/50">₹{item.targetRatePerKg.toFixed(2)}</TableCell>
-                      <TableCell className="bg-[#D3E4FD]/50">₹{item.targetRatePerPiece.toFixed(2)}</TableCell>
-                      <TableCell className="bg-[#D3E4FD]/50">{item.orderedQty}</TableCell>
-                      <TableCell className="bg-[#D3E4FD]/50">₹{item.targetL1Cost.toFixed(2)}</TableCell>
-                      <TableCell className="bg-[#D3E4FD]/50">{item.profitEnvisaged ? (item.profitEnvisaged * 100).toFixed(2) : '0.00'}%</TableCell>
-                    </TableRow>
-                  ))}
+                  {targetCostItems.map((item, index) => {
+                    // Recalculate target values based on editable target cost percentage
+                    const targetRatePerKg = item.ratePerKg * (editableValues.targetCostPercentage / 100);
+                    const targetRatePerPiece = targetRatePerKg * item.weightPerPiece;
+                    const targetL1Cost = targetRatePerPiece * item.orderedQty;
+                    
+                    // Find corresponding cost breakdown for L3 cost
+                    const costBreakdown = costBreakdowns[index];
+                    const l3CostPerKg = costBreakdown?.l3CostPerKg || 0;
+                    
+                    // Calculate Target L5 costs
+                    const targetL5CostPerKg = (targetRatePerKg + l3CostPerKg) + 
+                                             (targetRatePerKg + l3CostPerKg) * (humanIntervention.profitMarginPercentage / 100);
+                    const targetL5CostPerPiece = targetL5CostPerKg * item.weightPerPiece;
+                    const totalTargetL5Cost = targetL5CostPerPiece * item.orderedQty;
+                    
+                    // Calculate final quoted cost from cost breakdown
+                    const finalQuotedCost = (costBreakdown?.l5CostPerPiece || 0) * item.quotedQty;
+                    
+                    // Calculate profit envisaged
+                    const profitEnvisaged = finalQuotedCost > 0 ? 
+                                           (finalQuotedCost - totalTargetL5Cost) / finalQuotedCost : 0;
+                    
+                    return (
+                      <TableRow key={index}>
+                        <TableCell className="bg-[#F2FCE2]/30">{item.itemNumber}</TableCell>
+                        <TableCell className="bg-[#F2FCE2]/30">{item.itemDescription}</TableCell>
+                        <TableCell className="bg-[#F2FCE2]/30">{item.itemSpec}</TableCell>
+                        <TableCell className="bg-[#F2FCE2]/30">{item.weightPerPiece.toFixed(2)}</TableCell>
+                        <TableCell className="bg-[#F2FCE2]/30">₹{item.ratePerKg.toFixed(2)}</TableCell>
+                        <TableCell className="bg-[#F2FCE2]/30">₹{item.ratePerPiece.toFixed(2)}</TableCell>
+                        <TableCell className="bg-[#F2FCE2]/30">{item.quotedQty}</TableCell>
+                        
+                        <TableCell className="bg-[#D3E4FD]/30">₹{targetRatePerKg.toFixed(2)}</TableCell>
+                        <TableCell className="bg-[#D3E4FD]/30">₹{targetRatePerPiece.toFixed(2)}</TableCell>
+                        <TableCell className="bg-[#D3E4FD]/30">{item.orderedQty}</TableCell>
+                        <TableCell className="bg-[#D3E4FD]/30">₹{targetL1Cost.toFixed(2)}</TableCell>
+                        <TableCell className="bg-[#D3E4FD]/30">{(profitEnvisaged * 100).toFixed(2)}%</TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>

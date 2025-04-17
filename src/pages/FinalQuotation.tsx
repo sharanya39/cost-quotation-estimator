@@ -51,14 +51,75 @@ const FinalQuotation = () => {
     if (currentItemIndex < materialItems.length - 1) {
       // Move to next item
       setCurrentItemIndex(currentItemIndex + 1);
+      
+      // Go to Bill of Materials page
+      navigate("/bill-of-materials");
     } else {
       // Reset to the first item if we've gone through all items
       setCurrentItemIndex(0);
+      
+      // Go to Bill of Materials page
+      navigate("/bill-of-materials");
     }
-    
-    // Go to Bill of Materials page
-    navigate("/bill-of-materials");
   };
+
+  // Calculate and prepare target cost data for this item
+  const prepareTargetCostData = () => {
+    // Process all materialItems to generate target cost data
+    materialItems.forEach((item, index) => {
+      const cost = costBreakdowns[index];
+      if (!cost) return;
+      
+      const targetCostPercentage = 88; // Default 88% as specified
+      const targetRatePerKg = (cost.l1CostPerKg * targetCostPercentage) / 100;
+      const targetRatePerPiece = targetRatePerKg * item.unitWeight;
+      const targetL1Cost = targetRatePerPiece * item.quantity;
+      
+      // L3 cost (if available)
+      const l3CostPerKg = cost.l3CostPerKg || 0;
+      
+      // Calculate Target L5 costs
+      const targetL5CostPerKg = (targetRatePerKg + l3CostPerKg) + 
+                               (targetRatePerKg + l3CostPerKg) * (humanIntervention.profitMarginPercentage / 100);
+      const targetL5CostPerPiece = targetL5CostPerKg * item.unitWeight;
+      const totalTargetL5Cost = targetL5CostPerPiece * item.quantity;
+      
+      // Calculate final quoted cost
+      const finalQuotedCost = (cost.l5CostPerPiece || 0) * item.quantity;
+      
+      // Calculate profit envisaged
+      const profitEnvisaged = finalQuotedCost > 0 ? (finalQuotedCost - totalTargetL5Cost) / finalQuotedCost : 0;
+
+      const newTargetItem = {
+        itemNumber: item.itemPartNumber,
+        itemDescription: item.itemDescription,
+        itemSpec: item.material || "",
+        weightPerPiece: item.unitWeight,
+        ratePerKg: cost.l1CostPerKg,
+        ratePerPiece: cost.l1CostPerPiece,
+        quotedQty: item.quantity,
+        quotedL1Cost: cost.l1CostPerPiece * item.quantity,
+        targetRatePerKg,
+        targetRatePerPiece,
+        orderedQty: item.quantity,
+        targetL1Cost,
+        targetL5CostPerKg,
+        targetL5CostPerPiece,
+        totalTargetL5Cost,
+        profitEnvisaged
+      };
+
+      // Update target cost item at this index
+      const updatedTargetItems = [...targetCostItems];
+      updatedTargetItems[index] = newTargetItem;
+      setTargetCostItems(updatedTargetItems);
+    });
+  };
+
+  // Call this function to ensure target cost data is prepared
+  React.useEffect(() => {
+    prepareTargetCostData();
+  }, [costBreakdowns, materialItems]);
 
   return (
     <PageLayout 
@@ -146,45 +207,6 @@ const FinalQuotation = () => {
                   {materialItems.map((item, index) => {
                     const cost = costBreakdowns[index];
                     const freightCost = calculateFreightCost(item.unitWeight, humanIntervention.freightPerKg);
-                    
-                    // Generate target cost items for each material item
-                    if (!targetCostItems[index] && cost) {
-                      const targetCostPercentage = 88; // 88% as specified
-                      const targetRatePerKg = (cost.l1CostPerKg * targetCostPercentage) / 100;
-                      const targetRatePerPiece = targetRatePerKg * item.unitWeight;
-                      const targetL1Cost = targetRatePerPiece * item.quantity;
-                      const targetL5CostPerKg = cost.l3CostPerKg 
-                        ? (targetRatePerKg + cost.l3CostPerKg) + (targetRatePerKg + cost.l3CostPerKg) * (humanIntervention.profitMarginPercentage / 100)
-                        : 0;
-                      const targetL5CostPerPiece = targetL5CostPerKg * item.unitWeight;
-                      const totalTargetL5Cost = targetL5CostPerPiece * item.quantity;
-                      const finalQuotedCost = (cost.l5CostPerPiece || 0) * item.quantity;
-                      const profitEnvisaged = finalQuotedCost > 0 ? (finalQuotedCost - totalTargetL5Cost) / finalQuotedCost : 0;
-
-                      const newTargetItem = {
-                        itemNumber: item.itemPartNumber,
-                        itemDescription: item.itemDescription,
-                        itemSpec: item.material || "",
-                        weightPerPiece: item.unitWeight,
-                        ratePerKg: cost.l1CostPerKg,
-                        ratePerPiece: cost.l1CostPerPiece,
-                        quotedQty: item.quantity,
-                        quotedL1Cost: cost.l1CostPerKg * item.quantity,
-                        targetRatePerKg,
-                        targetRatePerPiece,
-                        orderedQty: item.quantity,
-                        targetL1Cost,
-                        targetL5CostPerKg,
-                        targetL5CostPerPiece,
-                        totalTargetL5Cost,
-                        profitEnvisaged
-                      };
-
-                      // Add to target cost items
-                      const updatedTargetItems = [...targetCostItems];
-                      updatedTargetItems[index] = newTargetItem;
-                      setTargetCostItems(updatedTargetItems);
-                    }
                     
                     return (
                       <TableRow key={index}>

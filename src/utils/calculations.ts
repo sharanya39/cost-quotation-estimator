@@ -87,6 +87,11 @@ export const calculateProfitEnvisaged = (
 
 // Extract median price from price range string
 export const extractMedianPrice = (priceRange: string): number => {
+  // Check if the price is already a single number
+  if (priceRange.match(/^₹\d+$/)) {
+    return parseInt(priceRange.replace('₹', ''));
+  }
+  
   // Example: "₹320 – ₹390"
   const prices = priceRange.match(/₹(\d+)/g);
   if (!prices || prices.length < 2) return 0;

@@ -19,7 +19,6 @@ const ProjectDetails = () => {
     projectId: projectDetails.projectId || "",
     location: projectDetails.location || "",
     firmPrice: projectDetails.firmPrice || false,
-    contractValue: 9000, // Default contract value
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +40,8 @@ const ProjectDetails = () => {
       firmPrice: formState.firmPrice,
     });
     
-    setContractValue(Number(formState.contractValue));
+    // Default contract value is set in the context
+    setContractValue(9000);
 
     if (action === "target" && targetCostItems.length > 0) {
       navigate("/target-cost-estimation");
@@ -133,18 +133,6 @@ const ProjectDetails = () => {
               value={formState.location}
               onChange={handleInputChange}
               placeholder="Enter project location"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="contractValue">Contract Value</Label>
-            <Input
-              id="contractValue"
-              name="contractValue"
-              type="number"
-              value={formState.contractValue}
-              onChange={handleInputChange}
-              placeholder="Enter contract value"
             />
           </div>
 
