@@ -1,26 +1,32 @@
+
 import * as XLSX from 'xlsx';
 import { MaterialItem, CostBreakdown, HumanIntervention } from '../types/cost-estimation';
-import { calculateFreightCost } from './calculations';
+import { formatINR } from './calculations';
 
 interface FinalEstimationItem {
-  sno: number;
-  partNumber: string;
-  description: string;
-  weight: number;
-  quantity: number;
-  quotedL1CostPerKg: number;
+  slNo: number;
+  itemNumber: string;
+  itemDescription: string;
+  materialGrade: string;
+  weightPerPiece: number;
+  ratePerKg: number;
+  ratePerPiece: number;
+  quotedQty: number;
+  quotedL1Cost: number;
   quotedL2CostPerKg: number;
   quotedL3CostPerKg: number;
   quotedL4CostPerKg: number;
   quotedL5CostPerKg: number;
   totalQuotedCostPerPiece: number;
-  finalQuotedCostFreight: number;
+  finalQuotedCost: number;
+  freightCost: number;
 }
 
 export const exportToExcel = (materialItems: MaterialItem[], costBreakdowns: CostBreakdown[], humanIntervention: HumanIntervention) => {
   const exportData: FinalEstimationItem[] = materialItems.map((item, index) => {
     const cost = costBreakdowns[index] || {
       l1CostPerKg: 0,
+      l1CostPerPiece: 0,
       l2CostPerKg: 0,
       l3CostPerKg: 0,
       l4CostPerKg: 0,
@@ -28,39 +34,47 @@ export const exportToExcel = (materialItems: MaterialItem[], costBreakdowns: Cos
       l5CostPerPiece: 0,
     };
     
-    const freightCost = calculateFreightCost(item.unitWeight, humanIntervention.freightPerKg);
+    const freightCost = humanIntervention.freightPerKg || 50;
     
     return {
-      sno: index + 1,
-      partNumber: item.itemPartNumber,
-      description: item.itemDescription,
-      weight: item.unitWeight,
-      quantity: item.quantity,
-      quotedL1CostPerKg: cost.l1CostPerKg || 0,
+      slNo: index + 1,
+      itemNumber: item.itemPartNumber,
+      itemDescription: item.itemDescription,
+      materialGrade: item.material || 'Standard',
+      weightPerPiece: item.unitWeight,
+      ratePerKg: cost.l1CostPerKg || 0,
+      ratePerPiece: cost.l1CostPerPiece || 0,
+      quotedQty: item.quantity,
+      quotedL1Cost: (cost.l1CostPerPiece || 0) * item.quantity,
       quotedL2CostPerKg: cost.l2CostPerKg || 0,
       quotedL3CostPerKg: cost.l3CostPerKg || 0,
       quotedL4CostPerKg: cost.l4CostPerKg || 0,
       quotedL5CostPerKg: cost.l5CostPerKg || 0,
       totalQuotedCostPerPiece: cost.l5CostPerPiece || 0,
-      finalQuotedCostFreight: freightCost
+      finalQuotedCost: (cost.l5CostPerPiece || 0) * item.quantity,
+      freightCost
     };
   });
 
   const worksheet = XLSX.utils.json_to_sheet(exportData);
 
   const headers = [
-    "S.No",
-    "Part Number",
-    "Description",
-    "Weight (kg)",
-    "Quantity",
-    "Quoted-L1 Cost/kg",
-    "Quoted-L2 Cost/kg",
-    "Quoted-L3 Cost/kg",
-    "Quoted-L4 Cost/kg",
-    "Quoted-L5 Cost/kg",
-    "Total Quoted-Cost/piece",
-    "Final-Quoted-Cost Freight"
+    "Sl.No",
+    "Item No.",
+    "Item Description",
+    "Material Grade",
+    "Wt pr pc (kg)",
+    "Rate per kg",
+    "Rate per pc",
+    "Quoted Qty",
+    "Quoted L1 cost",
+    "Quoted L2 cost R/kg",
+    "Quoted L3 cost R/kg",
+    "Quoted L4 cost R/kg",
+    "Quoted L5 cost R/kg",
+    "Total quoted cost pr pc",
+    "Final quoted cost",
+    "Freight cost per kg"
   ];
 
   XLSX.utils.sheet_add_aoa(worksheet, [headers], { origin: "A1" });
