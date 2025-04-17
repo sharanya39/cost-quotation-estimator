@@ -1,252 +1,206 @@
-
+import React from 'react';
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import PageLayout from "@/components/layout/PageLayout";
 import Navigation from "@/components/layout/Navigation";
 import { useCostEstimation } from "@/contexts/CostEstimationContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Download, RefreshCw, ChevronRight } from "lucide-react";
-import { exportToExcel } from "@/utils/exportUtils";
-import { format } from "date-fns";
-import { calculateFreightCost } from "@/utils/calculations";
-import { toast } from "@/components/ui/use-toast";
+import { formatINR } from "@/utils/calculations";
+import { useToast } from "@/hooks/use-toast";
 
 const FinalQuotation = () => {
   const navigate = useNavigate();
-  const { 
-    projectDetails, 
-    materialItems, 
-    costBreakdowns,
+  const { toast } = useToast();
+  const {
+    projectDetails,
+    materialItems,
     humanIntervention,
-    setCurrentItemIndex,
-    currentItemIndex,
+    engineeringDetails,
+    manufacturingProcesses,
+    costBreakdowns,
     targetCostItems,
-    setTargetCostItems
+    contractValue
   } = useCostEstimation();
 
-  const totalQuantity = materialItems.reduce((sum, item) => sum + item.quantity, 0);
-  const totalWeight = materialItems.reduce((sum, item) => sum + item.totalWeight, 0);
+  // Calculate total material cost
+  const totalMaterialCost = materialItems.reduce((sum, item) => {
+    const costBreakdown = costBreakdowns.find((cb) => materialItems.indexOf(item) === costBreakdowns.indexOf(cb));
+    return sum + (costBreakdown?.l5CostPerPiece || 0);
+  }, 0);
 
-  const handleDownload = () => {
-    exportToExcel(materialItems, costBreakdowns, humanIntervention);
-  };
+  // Calculate total manufacturing cost
+  const totalManufacturingCost = manufacturingProcesses.reduce((sum, process) => {
+    const itemIndex = manufacturingProcesses.indexOf(process);
+    const costBreakdown = costBreakdowns[itemIndex];
+    return sum + (costBreakdown?.l5CostPerPiece || 0);
+  }, 0);
 
-  const handleStartNew = () => {
-    // Navigate to home page to restart the flow
-    navigate("/");
-  };
+  // Calculate total target L5 cost
+  const totalTargetL5Cost = targetCostItems.reduce((sum, item) => {
+    return sum + (item.totalTargetL5Cost || 0);
+  }, 0);
 
-  const handleNextItem = () => {
-    if (materialItems.length <= 1) {
-      toast({
-        title: "Estimation Complete",
-        description: "Estimation done for the given item.",
-        variant: "default",
+  // Calculate final quoted cost
+  const finalQuotedCost = totalMaterialCost + totalManufacturingCost;
+
+  // Calculate profit envisaged
+  const profitEnvisaged = (finalQuotedCost - totalTargetL5Cost) / finalQuotedCost;
+
+  const handleCopyToClipboard = () => {
+    const quotationDetails = `
+      Project Details:
+        Customer Name: ${projectDetails.customerName}
+        Project Name: ${projectDetails.projectName}
+        Project ID: ${projectDetails.projectId}
+        Location: ${projectDetails.location}
+
+      Material Items:
+        ${materialItems.map((item, index) => {
+          const costBreakdown = costBreakdowns[index];
+          return `
+            Item ${index + 1}:
+              Item Part Number: ${item.itemPartNumber}
+              Item Description: ${item.itemDescription}
+              Quantity: ${item.quantity}
+              L5 Cost Per Piece: ${formatINR(costBreakdown?.l5CostPerPiece || 0)}
+          `;
+        }).join('\n')}
+
+      Human Intervention Parameters:
+        Firm Price Percentage: ${humanIntervention.firmPricePercentage}%
+        Overhead Percentage: ${humanIntervention.overheadPercentage}%
+        Waste Percentage: ${humanIntervention.wastePercentage}%
+        Commercial Overhead Percentage: ${humanIntervention.commercialOverheadPercentage}%
+        Profit Margin Percentage: ${humanIntervention.profitMarginPercentage}%
+        Negotiation Percentage: ${humanIntervention.negotiationPercentage}%
+        Freight Per Kg: ${formatINR(humanIntervention.freightPerKg)}
+
+      Engineering Details:
+        ${engineeringDetails.map((detail) => `
+            Title: ${detail.title}
+            Drawing Number: ${detail.drawingNumber}
+            Length: ${detail.length}
+            Width: ${detail.width}
+            Thickness: ${detail.thickness}
+            Holes Sizes and Position: ${detail.holesSizesAndPosition}
+            Tolerances: ${detail.tolerances}
+            Scale and Revision: ${detail.scaleAndRevision}
+            Authors: ${detail.authors}
+        `).join('\n')}
+
+      Manufacturing Processes:
+        ${manufacturingProcesses.map((process, index) => {
+          const costBreakdown = costBreakdowns[index];
+          return `
+            Process ${index + 1}:
+              Process: ${process.process}
+              Setup Time Per Batch: ${process.setupTimePerBatch}
+              Batch Quantity: ${process.batchQuantity}
+              Setup Time Per Piece: ${process.setupTimePerPiece}
+              Cycle Time Per Piece: ${process.cycleTimePerPiece}
+              Machine Hour Rate: ${formatINR(process.machineHourRate)}
+              Setup Cost: ${formatINR(process.setupCost)}
+              Cycle Cost: ${formatINR(process.cycleCost)}
+              L5 Cost Per Piece: ${formatINR(costBreakdown?.l5CostPerPiece || 0)}
+          `;
+        }).join('\n')}
+
+      Cost Breakdown:
+        Total Material Cost: ${formatINR(totalMaterialCost)}
+        Total Manufacturing Cost: ${formatINR(totalManufacturingCost)}
+        Final Quoted Cost: ${formatINR(finalQuotedCost)}
+
+      Target Cost Items:
+        ${targetCostItems.map((item) => `
+            Item Number: ${item.itemNumber}
+            Item Description: ${item.itemDescription}
+            Item Spec: ${item.itemSpec}
+            Weight Per Piece: ${item.weightPerPiece}
+            Rate Per Kg: ${formatINR(item.ratePerKg)}
+            Rate Per Piece: ${formatINR(item.ratePerPiece)}
+            Quoted Qty: ${item.quotedQty}
+            Quoted L1 Cost: ${formatINR(item.quotedL1Cost)}
+            Target Rate Per Kg: ${formatINR(item.targetRatePerKg)}
+            Target Rate Per Piece: ${formatINR(item.targetRatePerPiece)}
+            Ordered Qty: ${item.orderedQty}
+            Target L1 Cost: ${formatINR(item.targetL1Cost)}
+            Target L5 Cost Per Kg: ${formatINR(item.targetL5CostPerKg || 0)}
+            Target L5 Cost Per Piece: ${formatINR(item.targetL5CostPerPiece || 0)}
+            Total Target L5 Cost: ${formatINR(item.totalTargetL5Cost || 0)}
+            Profit Envisaged: ${(item.profitEnvisaged || 0).toFixed(2)}%
+        `).join('\n')}
+
+      Contract Value: ${formatINR(contractValue)}
+      Total Target L5 Cost: ${formatINR(totalTargetL5Cost)}
+      Profit Envisaged: ${(profitEnvisaged * 100).toFixed(2)}%
+    `;
+
+    navigator.clipboard.writeText(quotationDetails)
+      .then(() => {
+        toast({
+          title: "Quotation details copied to clipboard!",
+          description: "You can now paste the quotation details into an email or document.",
+        });
+      })
+      .catch(err => {
+        toast({
+          variant: "destructive",
+          title: "Failed to copy quotation details to clipboard!",
+          description: "Please try again.",
+        });
+        console.error('Failed to copy: ', err);
       });
-      return;
-    }
-    
-    // If there are more items in the BOM
-    if (currentItemIndex < materialItems.length - 1) {
-      // Move to next item
-      setCurrentItemIndex(currentItemIndex + 1);
-      
-      // Go to Bill of Materials page
-      navigate("/bill-of-materials");
-    } else {
-      // Reset to the first item if we've gone through all items
-      setCurrentItemIndex(0);
-      
-      // Go to Bill of Materials page
-      navigate("/bill-of-materials");
-    }
   };
-
-  // Calculate and prepare target cost data for this item
-  const prepareTargetCostData = () => {
-    // Process all materialItems to generate target cost data
-    materialItems.forEach((item, index) => {
-      const cost = costBreakdowns[index];
-      if (!cost) return;
-      
-      const targetCostPercentage = 88; // Default 88% as specified
-      const targetRatePerKg = (cost.l1CostPerKg * targetCostPercentage) / 100;
-      const targetRatePerPiece = targetRatePerKg * item.unitWeight;
-      const targetL1Cost = targetRatePerPiece * item.quantity;
-      
-      // L3 cost (if available)
-      const l3CostPerKg = cost.l3CostPerKg || 0;
-      
-      // Calculate Target L5 costs
-      const targetL5CostPerKg = (targetRatePerKg + l3CostPerKg) + 
-                               (targetRatePerKg + l3CostPerKg) * (humanIntervention.profitMarginPercentage / 100);
-      const targetL5CostPerPiece = targetL5CostPerKg * item.unitWeight;
-      const totalTargetL5Cost = targetL5CostPerPiece * item.quantity;
-      
-      // Calculate final quoted cost
-      const finalQuotedCost = (cost.l5CostPerPiece || 0) * item.quantity;
-      
-      // Calculate profit envisaged
-      const profitEnvisaged = finalQuotedCost > 0 ? (finalQuotedCost - totalTargetL5Cost) / finalQuotedCost : 0;
-
-      const newTargetItem = {
-        itemNumber: item.itemPartNumber,
-        itemDescription: item.itemDescription,
-        itemSpec: item.material || "",
-        weightPerPiece: item.unitWeight,
-        ratePerKg: cost.l1CostPerKg,
-        ratePerPiece: cost.l1CostPerPiece,
-        quotedQty: item.quantity,
-        quotedL1Cost: cost.l1CostPerPiece * item.quantity,
-        targetRatePerKg,
-        targetRatePerPiece,
-        orderedQty: item.quantity,
-        targetL1Cost,
-        targetL5CostPerKg,
-        targetL5CostPerPiece,
-        totalTargetL5Cost,
-        profitEnvisaged
-      };
-
-      // Update target cost item at this index
-      const updatedTargetItems = [...targetCostItems];
-      updatedTargetItems[index] = newTargetItem;
-      setTargetCostItems(updatedTargetItems);
-    });
-  };
-
-  // Call this function to ensure target cost data is prepared
-  React.useEffect(() => {
-    prepareTargetCostData();
-  }, [costBreakdowns, materialItems]);
 
   return (
-    <PageLayout 
-      title="Cost Estimation - Final Quotation" 
+    <PageLayout
+      title="Cost Estimation - Final Quotation"
       previousPage="/quotation-cost"
-      showNavigation={false}
+      nextPage="/target-cost-estimation"
+      nextButtonText="Continue to Target Cost Estimation"
     >
       <Navigation />
-      
-      <div className="space-y-6 bg-[#F2FCE2] p-6 rounded-lg">
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card className="bg-white/80">
-            <CardHeader>
-              <CardTitle>Customer Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-2">
-                <div className="text-sm font-medium">Customer Name:</div>
-                <div>{projectDetails.customerName}</div>
-                
-                <div className="text-sm font-medium">Customer ID:</div>
-                <div>{projectDetails.customerId}</div>
-                
-                <div className="text-sm font-medium">Project Name:</div>
-                <div>{projectDetails.projectName}</div>
-                
-                <div className="text-sm font-medium">Project ID:</div>
-                <div>{projectDetails.projectId}</div>
-                
-                <div className="text-sm font-medium">Location:</div>
-                <div>{projectDetails.location}</div>
-                
-                <div className="text-sm font-medium">Firm Price:</div>
-                <div>{projectDetails.firmPrice ? "Yes" : "No"}</div>
-              </div>
-            </CardContent>
-          </Card>
 
-          <Card className="bg-white/80">
-            <CardHeader>
-              <CardTitle>Estimation Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-2">
-                <div className="text-sm font-medium">Total Items:</div>
-                <div>{materialItems.length}</div>
-                
-                <div className="text-sm font-medium">Estimation Date:</div>
-                <div>{format(new Date(), "dd/MM/yyyy")}</div>
-                
-                <div className="text-sm font-medium">Total Quantity:</div>
-                <div>{totalQuantity} pieces</div>
-                
-                <div className="text-sm font-medium">Total Weight:</div>
-                <div>{totalWeight.toFixed(2)} kg</div>
-              </div>
-            </CardContent>
-          </Card>
+      <div className="space-y-6">
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold">Final Quotation</h2>
+          <p className="text-gray-600">
+            Review the final quotation details and copy them to your clipboard.
+          </p>
         </div>
 
-        <Card className="bg-white/80">
-          <CardHeader>
-            <CardTitle>Quotation Details</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-[#F2FCE2]">
-                    <TableHead>S.No</TableHead>
-                    <TableHead>Part Number</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Weight (kg)</TableHead>
-                    <TableHead>Quantity</TableHead>
-                    <TableHead>Quoted-L1 Cost/kg</TableHead>
-                    <TableHead>Quoted-L2 Cost/kg</TableHead>
-                    <TableHead>Quoted-L3 Cost/kg</TableHead>
-                    <TableHead>Quoted-L4 Cost/kg</TableHead>
-                    <TableHead>Quoted-L5 Cost/kg</TableHead>
-                    <TableHead>Total Quoted-Cost/piece</TableHead>
-                    <TableHead>Final-Quoted-Cost Freight</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {materialItems.map((item, index) => {
-                    const cost = costBreakdowns[index];
-                    const freightCost = calculateFreightCost(item.unitWeight, humanIntervention.freightPerKg);
-                    
-                    return (
-                      <TableRow key={index}>
-                        <TableCell>{index + 1}</TableCell>
-                        <TableCell>{item.itemPartNumber}</TableCell>
-                        <TableCell>{item.itemDescription}</TableCell>
-                        <TableCell>{item.unitWeight}</TableCell>
-                        <TableCell>{item.quantity}</TableCell>
-                        <TableCell>₹{cost?.l1CostPerKg?.toFixed(2) || '0.00'}</TableCell>
-                        <TableCell>₹{cost?.l2CostPerKg?.toFixed(2) || '0.00'}</TableCell>
-                        <TableCell>₹{cost?.l3CostPerKg?.toFixed(2) || '0.00'}</TableCell>
-                        <TableCell>₹{cost?.l4CostPerKg?.toFixed(2) || '0.00'}</TableCell>
-                        <TableCell>₹{cost?.l5CostPerKg?.toFixed(2) || '0.00'}</TableCell>
-                        <TableCell>₹{cost?.l5CostPerPiece?.toFixed(2) || '0.00'}</TableCell>
-                        <TableCell>₹{freightCost.toFixed(2)}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Project Details</h3>
+            <div className="space-y-2">
+              <p>Customer Name: {projectDetails.customerName}</p>
+              <p>Project Name: {projectDetails.projectName}</p>
+              <p>Project ID: {projectDetails.projectId}</p>
+              <p>Location: {projectDetails.location}</p>
             </div>
-          </CardContent>
-        </Card>
-
-        <div className="flex justify-between mt-6">
-          <div className="space-x-4">
-            <Button onClick={handleStartNew} variant="outline" className="flex items-center">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Final Quote Estimate
-            </Button>
-            <Button onClick={handleNextItem} variant="outline" className="flex items-center">
-              <ChevronRight className="mr-2 h-4 w-4" />
-              Next Item in BOM
-            </Button>
           </div>
-          <Button onClick={handleDownload} className="flex items-center bg-[#4CAF50] hover:bg-[#45a049]">
-            <Download className="mr-2 h-4 w-4" />
-            Download Excel Report
-          </Button>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Cost Summary</h3>
+            <div className="space-y-2">
+              <p>Total Material Cost: {formatINR(totalMaterialCost)}</p>
+              <p>Total Manufacturing Cost: {formatINR(totalManufacturingCost)}</p>
+              <p>Final Quoted Cost: {formatINR(finalQuotedCost)}</p>
+            </div>
+          </div>
         </div>
+
+        <div>
+          <h3 className="text-lg font-semibold mb-2">Target Cost Analysis</h3>
+          <div className="space-y-2">
+            <p>Contract Value: {formatINR(contractValue)}</p>
+            <p>Total Target L5 Cost: {formatINR(totalTargetL5Cost)}</p>
+            <p>Profit Envisaged: {(profitEnvisaged * 100).toFixed(2)}%</p>
+          </div>
+        </div>
+
+        <Button onClick={handleCopyToClipboard}>
+          Copy Quotation Details to Clipboard
+        </Button>
       </div>
     </PageLayout>
   );

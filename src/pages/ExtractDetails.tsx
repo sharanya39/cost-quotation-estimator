@@ -2,9 +2,8 @@
 import React from 'react';
 import PageLayout from "@/components/layout/PageLayout";
 import Navigation from "@/components/layout/Navigation";
-import { replaceNonTechnicalSummary, NonTechnicalAnalysis } from './components/NonTechnicalAnalysis';
+import { NonTechnicalAnalysis } from './components/NonTechnicalAnalysis';
 
-// Main component for Extract Details page
 const ExtractDetails = () => {
   return (
     <PageLayout 
