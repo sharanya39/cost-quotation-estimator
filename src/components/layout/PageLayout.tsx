@@ -13,6 +13,7 @@ interface PageLayoutProps {
   nextButtonText?: string;
   previousButtonText?: string;
   checkPremium?: boolean;
+  onNext?: () => void;
 }
 
 const PageLayout = ({
@@ -24,12 +25,15 @@ const PageLayout = ({
   nextButtonText = "Next",
   previousButtonText = "Back",
   checkPremium = false,
+  onNext,
 }: PageLayoutProps) => {
   const navigate = useNavigate();
   const { accessLevel } = useCostEstimation();
 
   const handleNext = () => {
-    if (checkPremium && accessLevel === "basic") {
+    if (onNext) {
+      onNext();
+    } else if (checkPremium && accessLevel === "basic") {
       navigate("/plans");
     } else if (nextPage) {
       navigate(nextPage);
