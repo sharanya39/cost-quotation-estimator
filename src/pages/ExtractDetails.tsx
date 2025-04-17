@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
@@ -6,7 +7,7 @@ import { useCostEstimation } from "@/contexts/CostEstimationContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { FileText, FileCode, Settings, Measure } from "lucide-react";
+import { FileText, FileCode, Settings, Ruler2 } from "lucide-react";
 import { NonTechnicalAnalysis } from './components/NonTechnicalAnalysis';
 
 const ExtractDetails = () => {
@@ -91,7 +92,7 @@ const ExtractDetails = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                          <Measure className="h-5 w-5 text-primary" />
+                          <Ruler2 className="h-5 w-5 text-primary" />
                           Technical Specifications
                         </h3>
                         <Table>
