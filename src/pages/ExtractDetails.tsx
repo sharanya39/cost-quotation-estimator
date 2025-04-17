@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
@@ -7,7 +6,7 @@ import { useCostEstimation } from "@/contexts/CostEstimationContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { FileText, Tool, Ruler, FileCode } from "lucide-react";
+import { FileText, FileCode, Settings } from "lucide-react";
 import { NonTechnicalAnalysis } from './components/NonTechnicalAnalysis';
 
 const ExtractDetails = () => {
@@ -37,7 +36,7 @@ const ExtractDetails = () => {
       <div className="space-y-6">
         <div className="space-y-4">
           <div className="flex items-center space-x-2">
-            <FileText className="h-6 w-6 text-primary" />
+            <Settings className="h-6 w-6 text-primary" />
             <h2 className="text-2xl font-bold">Engineering Drawing Analysis</h2>
           </div>
           <p className="text-gray-600">
@@ -70,7 +69,7 @@ const ExtractDetails = () => {
             onClick={() => setViewType('technical')}
             className="flex items-center gap-2"
           >
-            <Tool className="h-4 w-4" />
+            <Settings className="h-4 w-4" />
             Technical
           </Button>
           <Button 
@@ -177,7 +176,7 @@ const ExtractDetails = () => {
             onClick={handleContinue}
             className="flex items-center gap-2"
           >
-            <Tool className="h-4 w-4" />
+            <Settings className="h-4 w-4" />
             {accessLevel === 'premium' 
               ? "Continue to Material Cost" 
               : "Upgrade to Premium for Material Cost Estimation"}
