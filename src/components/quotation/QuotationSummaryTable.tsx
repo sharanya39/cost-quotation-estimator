@@ -35,7 +35,7 @@ const QuotationSummaryTable: React.FC<QuotationSummaryTableProps> = ({ items }) 
             <th className="font-semibold p-3 border border-green-100">Quoted-L4 Cost/kg</th>
             <th className="font-semibold p-3 border border-green-100">Quoted-L5 Cost/kg</th>
             <th className="font-semibold p-3 border border-green-100">Total Quoted-Cost/piece</th>
-            <th className="font-semibold p-3 border border-green-100">Final-Quoted-Cost Freight</th>
+            <th className="font-semibold p-3 border border-green-100">Final-Quoted-Cost Freight per kg</th>
           </tr>
         </thead>
         <tbody>

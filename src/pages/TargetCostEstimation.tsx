@@ -25,6 +25,23 @@ const TargetCostEstimation = () => {
     setContractValue
   } = useCostEstimation();
 
+  // Use values from final quotation page for the table if available.
+  const finalQuotationData = materialItems.map((item, idx) => ({
+    itemNumber: String(item.itemPartNumber || item.itemNumber),
+    itemDescription: item.itemDescription,
+    itemSpec: item.material || "",
+    weightPerPiece: item.unitWeight,
+    ratePerKg: costBreakdowns[idx]?.l1CostPerKg ?? 0,
+    ratePerPiece: costBreakdowns[idx]?.l1CostPerPiece ?? 0,
+    quotedQty: item.quantity,
+    quotedL1Cost: (costBreakdowns[idx]?.l1CostPerPiece ?? 0) * item.quantity,
+    targetRatePerKg: 0,
+    targetRatePerPiece: 0,
+    orderedQty: item.quantity,
+    targetL1Cost: 0,
+    profitEnvisaged: null,
+  }));
+
   // Calculate total quoted value from cost breakdowns
   const quotedValue = costBreakdowns.reduce((total, cost, index) => {
     const item = materialItems[index];
@@ -44,7 +61,6 @@ const TargetCostEstimation = () => {
   const allocationPercentage = quotedValue > 0 ? (editableValues.contractValue / quotedValue) * 100 : 0;
 
   useEffect(() => {
-    // Update contract value in context when it changes
     setContractValue(editableValues.contractValue);
   }, [editableValues.contractValue, setContractValue]);
 
@@ -54,29 +70,26 @@ const TargetCostEstimation = () => {
       [field]: value
     }));
   };
-  
-  const handleDownloadExcel = () => {
-    // Create data for Excel export
-    const exportData = targetCostItems.map((item) => ({
-      'Item No': item.itemNumber,
-      'Item Description': item.itemDescription,
-      'Item Spec': item.itemSpec,
-      'Weight per piece': item.weightPerPiece,
-      'Rate per kg': item.ratePerKg,
-      'Rate per piece': item.ratePerPiece,
-      'Quoted Qty': item.quotedQty,
-      'Quoted L1 Cost': item.quotedL1Cost,
-      'Target Rate per kg': item.targetRatePerKg,
-      'Target Rate per PC': item.targetRatePerPiece,
-      'Ordered Qty': item.orderedQty,
-      'Target L1 Cost': item.targetL1Cost,
-      'Profit Envisaged': item.profitEnvisaged ? (item.profitEnvisaged * 100).toFixed(2) + '%' : '0.00%'
-    }));
 
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Target Cost Estimation");
-    XLSX.writeFile(workbook, "target_cost_estimation.xlsx");
+  const handleDownloadExcel = () => {
+    // Use same Excel export as summary table (for demo).
+    // This could be extended to use the actual targetCostItems if different.
+    import('xlsx').then(XLSX => {
+      const exportData = finalQuotationData.map(item => ({
+        'Item No': item.itemNumber,
+        'Item Description': item.itemDescription,
+        'Item Spec': item.itemSpec,
+        'Weight per piece': item.weightPerPiece,
+        'Rate per kg': item.ratePerKg,
+        'Rate per piece': item.ratePerPiece,
+        'Quoted Qty': item.quotedQty,
+        'Quoted L1 Cost': item.quotedL1Cost,
+      }));
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Target Cost Estimation");
+      XLSX.writeFile(workbook, "target_cost_estimation.xlsx");
+    });
   };
 
   return (
@@ -171,29 +184,21 @@ const TargetCostEstimation = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {targetCostItems.map((item, index) => {
-                    // Recalculate target values based on editable target cost percentage
+                  {finalQuotationData.map((item, index) => {
                     const targetRatePerKg = item.ratePerKg * (editableValues.targetCostPercentage / 100);
                     const targetRatePerPiece = targetRatePerKg * item.weightPerPiece;
                     const targetL1Cost = targetRatePerPiece * item.orderedQty;
-                    
-                    // Find corresponding cost breakdown for L3 cost
-                    const costBreakdown = costBreakdowns[index];
-                    const l3CostPerKg = costBreakdown?.l3CostPerKg || 0;
-                    
-                    // Calculate Target L5 costs
+                    // Dummy calculations for now; adapt if business logic changes.
+                    const l3CostPerKg = costBreakdowns[index]?.l3CostPerKg || 0;
                     const targetL5CostPerKg = (targetRatePerKg + l3CostPerKg) + 
-                                             (targetRatePerKg + l3CostPerKg) * (humanIntervention.profitMarginPercentage / 100);
+                      (targetRatePerKg + l3CostPerKg) * (humanIntervention.profitMarginPercentage / 100);
                     const targetL5CostPerPiece = targetL5CostPerKg * item.weightPerPiece;
                     const totalTargetL5Cost = targetL5CostPerPiece * item.orderedQty;
-                    
-                    // Calculate final quoted cost from cost breakdown
-                    const finalQuotedCost = (costBreakdown?.l5CostPerPiece || 0) * item.quotedQty;
-                    
-                    // Calculate profit envisaged
-                    const profitEnvisaged = finalQuotedCost > 0 ? 
-                                           (finalQuotedCost - totalTargetL5Cost) / finalQuotedCost : 0;
-                    
+                    const finalQuotedCost = (costBreakdowns[index]?.l5CostPerPiece || 0) * item.quotedQty;
+                    const profitEnvisaged = finalQuotedCost > 0 
+                      ? (finalQuotedCost - totalTargetL5Cost) / finalQuotedCost 
+                      : 0;
+
                     return (
                       <TableRow key={index}>
                         <TableCell className="bg-[#F2FCE2]/30">{item.itemNumber}</TableCell>

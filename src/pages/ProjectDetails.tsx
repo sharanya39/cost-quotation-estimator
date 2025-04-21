@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
@@ -40,7 +39,6 @@ const ProjectDetails = () => {
       firmPrice: formState.firmPrice,
     });
     
-    // Default contract value is set in the context
     setContractValue(9000);
 
     if (action === "target" && targetCostItems.length > 0) {
@@ -169,7 +167,7 @@ const ProjectDetails = () => {
             variant="outline"
             className="w-48"
           >
-            Estimate Target Cost
+            Estimate Target cost
           </Button>
         </div>
       </div>

@@ -4,8 +4,13 @@ import { useCostEstimation } from "@/contexts/CostEstimationContext";
 import PageLayout from "@/components/layout/PageLayout";
 import Navigation from "@/components/layout/Navigation";
 import QuotationSummaryTable from "@/components/quotation/QuotationSummaryTable";
-import { FileText } from "lucide-react";
+import { FileText, Home, ArrowRight, Download, DollarSign } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { exportToExcel } from "@/utils/exportUtils";
 
+// Numbers will be shown as formatted amounts where needed.
 const FinalQuotation = () => {
   const {
     projectDetails,
@@ -14,27 +19,52 @@ const FinalQuotation = () => {
     humanIntervention,
   } = useCostEstimation();
 
-  // Mock values for demonstration, extract from context/materialItems as necessary
+  const navigate = useNavigate();
+
+  // Fix: All values must be number, not string. Format only for display.
   const summaryTableData = materialItems.map((item, idx) => ({
-    partNumber: item.itemPartNumber || item.itemNumber,
+    partNumber: String(item.itemPartNumber || item.itemNumber),
     description: item.itemDescription,
     weight: item.unitWeight,
     quantity: item.quantity,
-    l1Cost: costBreakdowns[idx]?.l1CostPerKg ? `₹${costBreakdowns[idx].l1CostPerKg.toFixed(2)}` : "—",
-    l2Cost: costBreakdowns[idx]?.l2CostPerKg ? `₹${costBreakdowns[idx].l2CostPerKg.toFixed(2)}` : "—",
-    l3Cost: costBreakdowns[idx]?.l3CostPerKg ? `₹${costBreakdowns[idx].l3CostPerKg.toFixed(2)}` : "—",
-    l4Cost: costBreakdowns[idx]?.l4CostPerKg ? `₹${costBreakdowns[idx].l4CostPerKg.toFixed(2)}` : "—",
-    l5Cost: costBreakdowns[idx]?.l5CostPerKg ? `₹${costBreakdowns[idx].l5CostPerKg.toFixed(2)}` : "—",
-    totalPerPiece: costBreakdowns[idx]?.l5CostPerPiece ? `₹${costBreakdowns[idx].l5CostPerPiece.toFixed(2)}` : "—",
-    freight: humanIntervention.freightPerKg ? `₹${humanIntervention.freightPerKg.toFixed(2)}` : "—"
+    l1Cost: costBreakdowns[idx]?.l1CostPerKg ?? 0,
+    l2Cost: costBreakdowns[idx]?.l2CostPerKg ?? 0,
+    l3Cost: costBreakdowns[idx]?.l3CostPerKg ?? 0,
+    l4Cost: costBreakdowns[idx]?.l4CostPerKg ?? 0,
+    l5Cost: costBreakdowns[idx]?.l5CostPerKg ?? 0,
+    totalPerPiece: costBreakdowns[idx]?.l5CostPerPiece ?? 0,
+    freight: humanIntervention.freightPerKg ?? 0
   }));
+
+  // Button handlers
+  const handleNewEstimation = () => {
+    navigate("/");
+    // Can also reset context if required, but reset is not specified.
+  };
+
+  const handleNextBOM = () => {
+    if (materialItems.length > 1) {
+      navigate("/bill-of-materials");
+    } else {
+      toast.info("This is last item in the Bill of Materials");
+    }
+  };
+
+  const handleDownloadExcel = () => {
+    // Use export utility to download the summary table.
+    exportToExcel(materialItems, costBreakdowns, humanIntervention);
+  };
+
+  const handleFinalQuotationCost = () => {
+    // Logic: start over and go home (as a reset for a new process)
+    navigate("/");
+  };
 
   return (
     <PageLayout
       title="Cost Estimation - Final Quotation"
       previousPage="/quotation-cost"
-      nextPage="/target-cost-estimation"
-      nextButtonText="Continue to Target Cost Estimation"
+      // Remove "Continue to Target Cost Estimation" and nextPage logic
     >
       <Navigation />
 
@@ -75,6 +105,25 @@ const FinalQuotation = () => {
         <div className="bg-green-50 rounded-xl p-6">
           <h3 className="text-xl font-bold mb-4 text-green-900">Quotation Details</h3>
           <QuotationSummaryTable items={summaryTableData} />
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-4 justify-end mt-6">
+          <Button onClick={handleNewEstimation} variant="outline">
+            <Home className="h-4 w-4 mr-2" />
+            New Estimation cost
+          </Button>
+          <Button onClick={handleNextBOM} variant="outline">
+            <ArrowRight className="h-4 w-4 mr-2" />
+            Next Estimation in the BOM
+          </Button>
+          <Button onClick={handleDownloadExcel} variant="outline">
+            <Download className="h-4 w-4 mr-2" />
+            Download the Excel
+          </Button>
+          <Button onClick={handleFinalQuotationCost}>
+            <DollarSign className="h-4 w-4 mr-2" /> Final quotation cost
+          </Button>
         </div>
       </div>
     </PageLayout>
