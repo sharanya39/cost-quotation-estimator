@@ -7,7 +7,7 @@ import { useCostEstimation } from "@/contexts/CostEstimationContext";
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NonTechnicalAnalysis } from './components/NonTechnicalAnalysis';
-import TechnologyLogos from './components/TechnologyLogos';
+// import TechnologyLogos from './components/TechnologyLogos'; // Removed as per instructions
 import ViewTypeToggle from './components/ViewTypeToggle';
 import TechnicalDetailsCard from './components/TechnicalDetailsCard';
 
@@ -49,8 +49,8 @@ const ExtractDetails = () => {
           The system has analyzed the engineering drawings and extracted relevant details from the provided specifications.
         </p>
 
-        <TechnologyLogos />
-        
+        {/* Removed TechnologyLogos as per user request */}
+
         <ViewTypeToggle 
           viewType={viewType} 
           onViewTypeChange={setViewType}
