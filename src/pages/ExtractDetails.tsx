@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import Navigation from "@/components/layout/Navigation";
 import { useCostEstimation } from "@/contexts/CostEstimationContext";
-import { Settings } from "lucide-react";
+import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NonTechnicalAnalysis } from './components/NonTechnicalAnalysis';
 import TechnologyLogos from './components/TechnologyLogos';
@@ -14,13 +14,17 @@ import TechnicalDetailsCard from './components/TechnicalDetailsCard';
 const ExtractDetails = () => {
   const navigate = useNavigate();
   const { engineeringDetails, accessLevel } = useCostEstimation();
-  const [viewType, setViewType] = useState<'technical' | 'non-technical'>('non-technical');
+  const [viewType, setViewType] = useState<'technical' | 'non-technical'>('technical');
 
   const handleContinue = () => {
-    if (accessLevel === 'premium') {
-      navigate('/material-cost');
+    if (viewType === 'technical') {
+      if (accessLevel === 'premium') {
+        navigate('/material-cost');
+      } else {
+        navigate('/plans');
+      }
     } else {
-      navigate('/plans');
+      navigate('/final-quotation');
     }
   };
 
@@ -36,15 +40,14 @@ const ExtractDetails = () => {
       <Navigation />
       
       <div className="space-y-6">
-        <div className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <Settings className="h-6 w-6 text-primary" />
-            <h2 className="text-2xl font-bold">Engineering Drawing Analysis</h2>
-          </div>
-          <p className="text-gray-600">
-            The system has analyzed the engineering drawings and extracted relevant details.
-          </p>
+        <div className="flex items-center space-x-2 mb-4">
+          <FileText className="h-6 w-6 text-primary" />
+          <h2 className="text-2xl font-bold">Extract Details</h2>
         </div>
+
+        <p className="text-gray-600 mb-6">
+          The system has analyzed the engineering drawings and extracted relevant details from the provided specifications.
+        </p>
 
         <TechnologyLogos />
         
@@ -78,19 +81,25 @@ const ExtractDetails = () => {
                 tolerances, and manufacturing requirements. The material specifications and 
                 finishing requirements have been extracted to assist in cost estimation.
               </p>
+              <p className="mt-4">
+                Based on the drawings analysis, we've identified key manufacturing considerations
+                that will affect cost estimation. These include precision tolerances, 
+                material selection, and specialized machining operations.
+              </p>
             </div>
           </NonTechnicalAnalysis>
         )}
 
-        <div className="flex justify-end mt-6">
+        <div className="flex justify-center mt-8">
           <Button 
             onClick={handleContinue}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 px-6 py-3"
           >
-            <Settings className="h-4 w-4" />
-            {accessLevel === 'premium' 
-              ? "Continue to Material Cost" 
-              : "Upgrade to Premium for Material Cost Estimation"}
+            <FileText className="h-4 w-4" />
+            {viewType === 'technical' 
+              ? (accessLevel === 'premium' ? "Continue to Material Cost" : "Upgrade to Premium")
+              : "View Final Quotation"
+            }
           </Button>
         </div>
       </div>

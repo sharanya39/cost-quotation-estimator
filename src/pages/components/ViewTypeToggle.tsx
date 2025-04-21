@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Settings, FileCode } from "lucide-react";
+import { Wrench, FileText } from "lucide-react";
 
 interface ViewTypeToggleProps {
   viewType: 'technical' | 'non-technical';
@@ -16,7 +16,7 @@ const ViewTypeToggle = ({ viewType, onViewTypeChange }: ViewTypeToggleProps) => 
         onClick={() => onViewTypeChange('technical')}
         className="flex items-center gap-2"
       >
-        <Settings className="h-4 w-4" />
+        <Wrench className="h-4 w-4" />
         Technical
       </Button>
       <Button 
@@ -24,7 +24,7 @@ const ViewTypeToggle = ({ viewType, onViewTypeChange }: ViewTypeToggleProps) => 
         onClick={() => onViewTypeChange('non-technical')}
         className="flex items-center gap-2"
       >
-        <FileCode className="h-4 w-4" />
+        <FileText className="h-4 w-4" />
         Non-Technical
       </Button>
     </div>

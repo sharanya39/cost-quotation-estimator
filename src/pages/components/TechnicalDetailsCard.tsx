@@ -3,10 +3,10 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Ruler } from "lucide-react";
-import { EngineeringDetail } from '@/types/cost-estimation';
+import { EngineeringDetails } from '@/types/cost-estimation';
 
 interface TechnicalDetailsCardProps {
-  detail: EngineeringDetail;
+  detail: EngineeringDetails;
   index: number;
 }
 
