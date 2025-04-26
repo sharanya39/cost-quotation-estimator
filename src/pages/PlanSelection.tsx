@@ -9,7 +9,8 @@ const PlanSelection = () => {
   const { setAccessLevel } = useCostEstimation();
 
   const handleSelectPlan = (plan: "basic" | "premium") => {
-    setAccessLevel(plan);
+    setAccessLevel("premium"); // Temporarily always set to premium
+    // setAccessLevel(plan);
     navigate("/project-details");
   };
 

@@ -10,18 +10,19 @@ const Navigation = () => {
   
   const navItems = [
     { name: "Project Details", path: "/project-details" },
+    { name: "Upload Engineering Diagram", path: "/upload-engineering-diagram" },
     { name: "Bill of Materials", path: "/bill-of-materials" },
     { name: "Human Intervention", path: "/human-intervention" },
     { name: "Engineering Drawings", path: "/engineering-drawings" },
     { name: "Extract Details", path: "/extract-details" },
-    ...(accessLevel === "premium" ? [
+    // ...(accessLevel === "premium" ? [
       { name: "Material Cost", path: "/material-cost" },
       { name: "Manufacturing Cost", path: "/manufacturing-cost-1" },
       { name: "Production Cost", path: "/production-cost" },
       { name: "Should Cost", path: "/should-cost" },
       { name: "Quotation Cost", path: "/quotation-cost" },
       { name: "Final Quotation", path: "/final-quotation" },
-    ] : [])
+    // ] : [])
   ];
 
   return (
