@@ -4,10 +4,15 @@ import PageLayout from '@/components/layout/PageLayout';
 import Navigation from '@/components/layout/Navigation';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { useToast } from '@/hooks/use-toast';
 
 const UploadEngineeringDiagram = () => {
   const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -15,13 +20,41 @@ const UploadEngineeringDiagram = () => {
     }
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (file) {
-      // Handle file upload logic here
-      console.log('File uploaded:', file);
-      // Navigate to Bill of Materials page after upload
-      navigate('/bill-of-materials');
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('filename', file.name);
+
+      const response = await fetch('http://localhost:3000/api/upload-diagram', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: 'Success',
+          description: 'Engineering diagram uploaded successfully',
+        });
+        navigate('/bill-of-materials');
+      } else {
+        throw new Error(result.error || 'Failed to upload file');
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to upload engineering diagram',
+        variant: 'destructive',
+      });
+    } finally {
+      setUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -59,12 +92,17 @@ const UploadEngineeringDiagram = () => {
           </div>
 
           <div className="pt-4 flex justify-center">
+            {uploadProgress > 0 && uploadProgress < 100 && (
+              <div className="w-full mb-4">
+                <Progress value={uploadProgress} className="w-full" />
+              </div>
+            )}
             <Button
               type="submit"
-              disabled={!file}
+              disabled={!file || uploading}
               className="w-48"
             >
-              Upload & Continue
+              {uploading ? 'Uploading...' : 'Upload & Continue'}
             </Button>
           </div>
         </form>

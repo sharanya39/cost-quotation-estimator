@@ -1,0 +1,33 @@
+import { Elysia } from 'elysia';
+import { cors } from '@elysiajs/cors';
+import { staticPlugin } from '@elysiajs/static';
+import { mkdir, writeFile } from 'fs/promises';
+import { join } from 'path';
+
+const app = new Elysia()
+  .use(cors())
+  .use(staticPlugin())
+  .post('/api/upload-diagram', async ({ body }) => {
+    try {
+      const { file, filename } = body as { file: Blob; filename: string };
+      const uploadDir = join(process.cwd(), 'backend', 'data', 'diagrams');
+      
+      // Ensure upload directory exists
+      await mkdir(uploadDir, { recursive: true });
+      
+      // Generate unique filename
+      const uniqueFilename = `${Date.now()}-${filename}`;
+      const filePath = join(uploadDir, uniqueFilename);
+      
+      // Write file to disk
+      const buffer = await file.arrayBuffer();
+      await writeFile(filePath, Buffer.from(buffer));
+      
+      return { success: true, filename: uniqueFilename };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  })
+  .listen(3000);
+
+console.log(`🦊 Server is running at ${app.server?.hostname}:${app.server?.port}`);
