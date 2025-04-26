@@ -35,8 +35,8 @@ const HumanIntervention = () => {
     <PageLayout
       title="Cost Estimation - Human Intervention"
       previousPage="/bill-of-materials"
-      nextPage="/engineering-drawings"
-      nextButtonText="Continue to Engineering Drawings"
+      nextPage="/extract-details"
+      nextButtonText="Continue to Extract Details"
     >
       <Navigation />
 

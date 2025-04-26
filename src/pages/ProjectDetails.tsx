@@ -44,7 +44,7 @@ const ProjectDetails = () => {
     if (action === "target" && targetCostItems.length > 0) {
       navigate("/target-cost-estimation");
     } else {
-      navigate("/bill-of-materials");
+      navigate("/upload-engineering-diagram");
     }
   };
 

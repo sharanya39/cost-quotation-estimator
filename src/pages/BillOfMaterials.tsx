@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import Navigation from "@/components/layout/Navigation";
@@ -24,6 +24,36 @@ const BillOfMaterials = () => {
           },
         ]
   );
+
+  useEffect(() => {
+    const fetchOpData = async () => {
+      try {
+        const response = await fetch('/backend/output/op.json');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        if (items.length === 1 && !items[0].itemPartNumber && !items[0].itemDescription) {
+          setItems([
+            {
+              itemNumber: 1,
+              itemPartNumber: data.drawing_number,
+              itemDescription: data.part_name,
+              unitWeight: data.unit_weight_kg,
+              quantity: 0,
+              totalWeight: 0,
+            },
+          ]);
+        }
+      } catch (error) {
+        console.error('Error loading op.json:', error);
+        // Silently fall back to manual entry mode by keeping the default empty item
+      }
+    };
+
+    fetchOpData();
+  }, [items]);
 
   const handleInputChange = (index: number, field: string, value: string | number) => {
     const updatedItems = [...items];

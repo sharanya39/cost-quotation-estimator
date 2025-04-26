@@ -40,7 +40,17 @@ export const CostEstimationProvider = ({ children }: { children: ReactNode }) =>
     freightPerKg: 50
   });
   
-  const [engineeringDetails, setEngineeringDetails] = useState<EngineeringDetails[]>([]);
+  const [engineeringDetails, setEngineeringDetails] = useState<EngineeringDetails[]>([{
+    title: "",
+    drawingNumber: "",
+    length: 0,
+    width: 0,
+    thickness: 0,
+    holesSizesAndPosition: "",
+    tolerances: "",
+    scaleAndRevision: "",
+    authors: ""
+  }]);
   const [manufacturingProcesses, setManufacturingProcesses] = useState<ManufacturingProcess[]>([]);
   const [costBreakdowns, setCostBreakdowns] = useState<CostBreakdown[]>([]);
   const [targetCostItems, setTargetCostItems] = useState<TargetCostItem[]>([]);

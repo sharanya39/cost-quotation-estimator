@@ -13,7 +13,7 @@ const Navigation = () => {
     { name: "Upload Engineering Diagram", path: "/upload-engineering-diagram" },
     { name: "Bill of Materials", path: "/bill-of-materials" },
     { name: "Human Intervention", path: "/human-intervention" },
-    { name: "Engineering Drawings", path: "/engineering-drawings" },
+    // { name: "Engineering Drawings", path: "/engineering-drawings" },
     { name: "Extract Details", path: "/extract-details" },
     // ...(accessLevel === "premium" ? [
       { name: "Material Cost", path: "/material-cost" },

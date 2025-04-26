@@ -32,11 +32,7 @@ const TechnicalDetailsCard = ({ detail, index }: TechnicalDetailsCardProps) => {
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Material</TableCell>
-                  <TableCell>
-                    {index === 0 ? "Stainless Steel 316" : 
-                     index === 1 ? "Aluminum 7075-T6" : 
-                     "Stainless Steel 304"}
-                  </TableCell>
+                  <TableCell>{detail.material || 'Not specified'}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -67,7 +63,7 @@ const TechnicalDetailsCard = ({ detail, index }: TechnicalDetailsCardProps) => {
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Processing Notes</TableCell>
-                  <TableCell>Standard machining process with deburring</TableCell>
+                  <TableCell>{detail.surfaceTreatment || 'Standard machining process'}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>

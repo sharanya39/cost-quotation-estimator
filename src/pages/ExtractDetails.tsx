@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import Navigation from "@/components/layout/Navigation";
@@ -13,7 +13,49 @@ import TechnicalDetailsCard from './components/TechnicalDetailsCard';
 
 const ExtractDetails = () => {
   const navigate = useNavigate();
-  const { engineeringDetails, accessLevel } = useCostEstimation();
+  var { engineeringDetails, setEngineeringDetails, accessLevel } = useCostEstimation();
+  accessLevel = 'premium';
+  useEffect(() => {
+    const fetchOpData = async () => {
+      try {
+        const response = await fetch('/backend/output/op.json');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        // Find bounding dimensions
+        const boundingDims = data.dimensions.filter((dim: any) => dim.is_bounding_dimension);
+        const [length, width, thickness] = boundingDims.map((dim: any) => parseFloat(dim.dimension));
+        
+        // Compile holes information
+        const holesInfo = data.holes.map((hole: any) => 
+          `${hole.quantity}x Ø${hole.diameter_mm}mm ${hole.hole_type} holes`
+        ).join(', ');
+
+        // Compile tolerances
+        const tolerances = data.dimensions
+          .map((dim: any) => `${dim.dimension}mm ${dim.tolerance}`)
+          .join(', ');
+
+        setEngineeringDetails([{
+          title: data.part_name,
+          drawingNumber: data.drawing_number,
+          length,
+          width,
+          thickness,
+          holesSizesAndPosition: holesInfo,
+          tolerances,
+          scaleAndRevision: `Rev ${data.revision}`,
+          authors: 'System Generated'
+        }]);
+      } catch (error) {
+        console.error('Error loading op.json:', error);
+      }
+    };
+
+    fetchOpData();
+  }, [setEngineeringDetails]);
   const [viewType, setViewType] = useState<'technical' | 'non-technical'>('technical');
 
   const handleContinue = () => {

@@ -39,6 +39,8 @@ export interface EngineeringDetails {
   tolerances: string;
   scaleAndRevision: string;
   authors: string;
+  material?: string;
+  surfaceTreatment?: string;
 }
 
 export interface ManufacturingProcess {
