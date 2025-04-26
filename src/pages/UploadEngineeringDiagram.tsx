@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
 import Navigation from '@/components/layout/Navigation';
@@ -11,13 +11,30 @@ const UploadEngineeringDiagram = () => {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setFile(event.target.files[0]);
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) return;
+
+    if (selectedFile.type !== 'application/pdf') {
+      toast({
+        title: 'Error',
+        description: 'Please select a PDF file',
+        variant: 'destructive',
+      });
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      return;
     }
+
+    setFile(selectedFile);
+    const url = URL.createObjectURL(selectedFile);
+    setPreviewUrl(url);
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -76,10 +93,12 @@ const UploadEngineeringDiagram = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="diagram">Engineering Diagram</Label>
+            <Label htmlFor="diagram">Engineering Diagram (PDF only)</Label>
             <input
               id="diagram"
               type="file"
+              ref={fileInputRef}
+              accept=".pdf,application/pdf"
               onChange={handleFileChange}
               className="block w-full text-sm text-gray-500
                 file:mr-4 file:py-2 file:px-4
@@ -90,6 +109,16 @@ const UploadEngineeringDiagram = () => {
                 cursor-pointer"
             />
           </div>
+
+          {previewUrl && (
+            <div className="mt-4 border rounded-lg overflow-hidden">
+              <iframe
+                src={previewUrl}
+                className="w-full h-[600px]"
+                title="PDF Preview"
+              />
+            </div>
+          )}
 
           <div className="pt-4 flex justify-center">
             {uploadProgress > 0 && uploadProgress < 100 && (
