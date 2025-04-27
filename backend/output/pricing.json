@@ -1,0 +1,93 @@
+{
+    "raw_materials": [
+      {
+        "name": "Steel - Mild Steel",
+        "code": "S355",
+        "unit": "INR/kg",
+        "price": 52.27,
+        "source": "Reuters",
+        "date": "2025-03-05"
+      },
+      {
+        "name": "Steel - Mild Steel",
+        "code": "C1",
+        "unit": "INR/kg",
+        "price": 52.27,
+        "source": "Reuters",
+        "date": "2025-03-05"
+      },
+      {
+        "name": "Steel - Stainless Steel 304",
+        "code": "S304",
+        "unit": "INR/kg",
+        "price": 180,
+        "source": "SteelTube.co.in",
+        "date": "2025-01-10"
+      },
+      {
+        "name": "Aluminium - Primary Ingot (P1020, 99.7%)",
+        "code": "A1020",
+        "unit": "INR/kg",
+        "price": 274.75,
+        "source": "BigMint",
+        "date": "2025-03-06"
+      },
+      {
+        "name": "Aluminium - ADC12 Ingot",
+        "code": "A12",
+        "unit": "INR/kg",
+        "price": 218,
+        "source": "AlCircle",
+        "date": "2024-08-10"
+      },
+      {
+        "name": "Copper - Cathode",
+        "code": "Cu",
+        "unit": "INR/kg",
+        "price": 700,
+        "source": "CostMasters",
+        "date": "2025-04-27"
+      },
+      {
+        "name": "Copper - Scrap",
+        "code": "CuScrap",
+        "unit": "INR/kg",
+        "price": 600,
+        "source": "CostMasters",
+        "date": "2025-04-27"
+      },
+      {
+        "name": "Plastic - Polypropylene (PP)",
+        "code": "PP",
+        "unit": "INR/kg",
+        "price": 100,
+        "source": "Made-in-China",
+        "date": "2025-04-27"
+      },
+      {
+        "name": "Plastic - Polyamide PA66",
+        "code": "PA66",
+        "unit": "INR/kg",
+        "price": 150,
+        "source": "Made-in-China",
+        "date": "2025-04-27"
+      },
+      {
+        "name": "Rubber - Natural Rubber (RSS4)",
+        "code": "RSS4",
+        "unit": "INR/kg",
+        "price": 244,
+        "source": "The New Indian Express",
+        "date": "2024-08-08"
+      },
+      {
+        "name": "Rubber - Synthetic Rubber (SBR)",
+        "code": "SBR",
+        "unit": "INR/kg",
+        "price": 150,
+        "source": "CostMasters",
+        "date": "2025-04-27"
+      }
+    ]
+  }
+  

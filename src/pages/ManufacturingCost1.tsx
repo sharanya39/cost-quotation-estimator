@@ -108,6 +108,8 @@ const ManufacturingCost1 = () => {
     );
     
     // Per kg calculations (if weight is available)
+    console.log("Current item:", currentItem);
+    console.log("Weight:", currentItem?.unitWeight);
     const weight = currentItem?.unitWeight || 1;
     const totalSetupCostPerKg = totalSetupCostPerPiece / weight;
     const totalCycleCostPerKg = totalCycleCostPerPiece / weight;

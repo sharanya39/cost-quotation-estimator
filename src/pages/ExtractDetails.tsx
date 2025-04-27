@@ -47,7 +47,9 @@ const ExtractDetails = () => {
           holesSizesAndPosition: holesInfo,
           tolerances,
           scaleAndRevision: `Rev ${data.revision}`,
-          authors: 'System Generated'
+          authors: 'System Generated',
+          material: data.material,
+          surfaceTreatment: data.surface_treatment
         }]);
       } catch (error) {
         console.error('Error loading op.json:', error);
