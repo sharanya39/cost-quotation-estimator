@@ -8,6 +8,13 @@ import { main as runGeminiOCR } from './gemini_ocr';
 const app = new Elysia()
   .use(cors())
   .use(staticPlugin())
+  // Ensure required directories exist
+  .onStart(async () => {
+    const diagramsDir = join(process.cwd(), 'backend', 'data', 'diagrams');
+    const outputDir = join(process.cwd(), 'backend', 'output');
+    await mkdir(diagramsDir, { recursive: true });
+    await mkdir(outputDir, { recursive: true });
+  })
   .post('/api/upload-diagram', async ({ body }) => {
     try {
       const { file, filename } = body as { file: Blob; filename: string };

@@ -1,57 +1,53 @@
 {
-    "dimensions": [
-      {
-        "dimension": "130",
-        "is_bounding_dimension": true,
-        "tolerance": "±0.5"
-      },
-      {
-        "dimension": "100",
-        "is_bounding_dimension": true,
-        "tolerance": "±0.3"
-      },
-      {
-        "dimension": "10",
-        "is_bounding_dimension": true,
-        "tolerance": "±0.2"
-      },
-      {
-        "dimension": "106",
-        "is_bounding_dimension": false,
-        "tolerance": "±0.1"
-      },
-      {
-        "dimension": "76",
-        "is_bounding_dimension": false,
-        "tolerance": "±0.1"
-      },
-      {
-        "dimension": "12",
-        "is_bounding_dimension": false,
-        "tolerance": "±0.1"
-      }
-    ],
-    "drawing_number": "3100130381",
-    "material": "C1",
-    "part_name": "HYDRAULIC CYLINDER SPACER",
-    "finish": "DEBURR & BLACKEN",
-    "holes": [
-      {
-        "diameter_mm": 12.0,
-        "hole_type": "THRU",
-        "quantity": 4,
-        "depth_mm":
-        10.0
-      }
-    ],
-    "notes": [
-      "TOUGHNED TO 80-90 Kgf/mm2",
-      "Unit weight could not be estimated as material 'C1' is not recognized."
-    ],
-    "revision": "00",
-    "surface_treatment":
-    "TOUGHNED TO 80-90 Kgf/mm2",
-    "thread_specs": [],
-    "unit_weight_kg":
-    0.13
-  }
+  "dimensions": [
+    {
+      "dimension": "130",
+      "is_bounding_dimension": true,
+      "tolerance": "General Tolerance"
+    },
+    {
+      "dimension": "100",
+      "is_bounding_dimension": true,
+      "tolerance": "General Tolerance"
+    },
+    {
+      "dimension": "10",
+      "is_bounding_dimension": true,
+      "tolerance": "General Tolerance"
+    },
+    {
+      "dimension": "106",
+      "is_bounding_dimension": false,
+      "tolerance": "±0.1"
+    },
+    {
+      "dimension": "76",
+      "is_bounding_dimension": false,
+      "tolerance": "±0.1"
+    },
+    {
+      "dimension": "12",
+      "is_bounding_dimension": false,
+      "tolerance": "±0.1"
+    }
+  ],
+  "drawing_number": "3100130381",
+  "material": "C1",
+  "part_name": "HYDRAULIC CYLINDER SPACER",
+  "finish": "DEBURR & BLACKEN",
+  "holes": [
+    {
+      "diameter_mm": 12,
+      "hole_type": "THRU",
+      "quantity": 4,
+      "depth_mm": 0
+    }
+  ],
+  "notes": [
+    "TOUGHNED TO 80-90 Kgf/mm2"
+  ],
+  "revision": "00",
+  "surface_treatment": "TOUGHNED TO 80-90 Kgf/mm2",
+  "thread_specs": [],
+  "unit_weight_kg": 0
+}
