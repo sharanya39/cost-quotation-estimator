@@ -3,6 +3,7 @@ import { cors } from '@elysiajs/cors';
 import { staticPlugin } from '@elysiajs/static';
 import { mkdir, writeFile } from 'fs/promises';
 import { join } from 'path';
+import { main as runGeminiOCR } from './gemini_ocr';
 
 const app = new Elysia()
   .use(cors())
@@ -24,6 +25,9 @@ const app = new Elysia()
       // Write file to disk
       const buffer = await file.arrayBuffer();
       await writeFile(filePath, Buffer.from(buffer));
+      
+      // Run Gemini OCR processing
+      await runGeminiOCR(filePath);
       
       return { success: true, filename: fixedFilename };
     } catch (error) {
