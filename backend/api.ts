@@ -16,14 +16,16 @@ const app = new Elysia()
       await mkdir(uploadDir, { recursive: true });
       
       // Generate unique filename
-      const uniqueFilename = `${Date.now()}-${filename}`;
-      const filePath = join(uploadDir, uniqueFilename);
+      // const uniqueFilename = `${Date.now()}-${filename}`;
+      // const filePath = join(uploadDir, uniqueFilename);
+      const fixedFilename = 'inp.pdf';
+      const filePath = join(uploadDir, fixedFilename);
       
       // Write file to disk
       const buffer = await file.arrayBuffer();
       await writeFile(filePath, Buffer.from(buffer));
       
-      return { success: true, filename: uniqueFilename };
+      return { success: true, filename: fixedFilename };
     } catch (error) {
       return { success: false, error: error.message };
     }
