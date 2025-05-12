@@ -1,11 +1,15 @@
+import dotenv from 'dotenv';
+dotenv.config({ path: 'backend\\.env' });
+
 import { Elysia } from 'elysia';
 import { cors } from '@elysiajs/cors';
 
 import { mkdir, writeFile, readFile } from 'fs/promises';
 import { join } from 'path';
 import { main as runGeminiOCR } from './gemini_ocr';
+try {
 
-const app = new Elysia()
+  const app = new Elysia()
   .use(cors())
 
   // Ensure required directories exist
@@ -92,3 +96,7 @@ const app = new Elysia()
   .listen(3000);
 
 console.log(`🦊 Server is running at ${app.server?.hostname}:${app.server?.port}`);
+} catch (error) {
+  console.error('Failed to start server:', error);
+  process.exit(1);
+}
