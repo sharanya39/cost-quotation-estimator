@@ -52,7 +52,17 @@ const UploadEngineeringDiagram = () => {
         body: formData,
       });
 
-      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const text = await response.text();
+      let result;
+      try {
+        result = text ? JSON.parse(text) : {};
+      } catch (error) {
+        throw new Error('Invalid JSON response from server');
+      }
 
       if (result.success) {
         toast({
