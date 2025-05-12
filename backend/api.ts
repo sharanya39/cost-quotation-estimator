@@ -7,7 +7,7 @@ import { main as runGeminiOCR } from './gemini_ocr';
 
 const app = new Elysia()
   .use(cors())
-  .use(staticPlugin())
+  // .use(staticPlugin())
   // Ensure required directories exist
   .onStart(async () => {
     const diagramsDir = join(process.cwd(), 'backend', 'data', 'diagrams');
