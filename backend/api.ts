@@ -19,6 +19,9 @@ try {
     await mkdir(diagramsDir, { recursive: true });
     await mkdir(outputDir, { recursive: true });
   })
+  .post('/', async () => {
+    return 'Hello World!';
+  })
   .post('/api/upload-diagram', async ({ body }) => {
     try {
       const { file, filename } = body as { file: Blob; filename: string };
