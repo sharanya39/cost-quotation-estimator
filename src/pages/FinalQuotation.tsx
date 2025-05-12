@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { exportToExcel } from "@/utils/exportUtils";
+import { exportToPDF } from "@/utils/pdfUtils";
 
 // Numbers will be shown as formatted amounts where needed.
 const FinalQuotation = () => {
@@ -27,13 +28,13 @@ const FinalQuotation = () => {
     description: item.itemDescription,
     weight: item.unitWeight,
     quantity: item.quantity,
-    l1Cost: costBreakdowns[idx]?.l1CostPerKg ?? 0,
-    l2Cost: costBreakdowns[idx]?.l2CostPerKg ?? 0,
-    l3Cost: costBreakdowns[idx]?.l3CostPerKg ?? 0,
-    l4Cost: costBreakdowns[idx]?.l4CostPerKg ?? 0,
-    l5Cost: costBreakdowns[idx]?.l5CostPerKg ?? 0,
-    totalPerPiece: costBreakdowns[idx]?.l5CostPerPiece ?? 0,
-    freight: humanIntervention.freightPerKg ?? 0
+    l1Cost: Number((costBreakdowns[idx]?.l1CostPerKg ?? 0).toFixed(4)),
+    l2Cost: Number((costBreakdowns[idx]?.l2CostPerKg ?? 0).toFixed(4)),
+    l3Cost: Number((costBreakdowns[idx]?.l3CostPerKg ?? 0).toFixed(4)),
+    l4Cost: Number((costBreakdowns[idx]?.l4CostPerKg ?? 0).toFixed(4)),
+    l5Cost: Number((costBreakdowns[idx]?.l5CostPerKg ?? 0).toFixed(4)),
+    totalPerPiece: Number((costBreakdowns[idx]?.l5CostPerPiece ?? 0).toFixed(4)),
+    freight: Number((humanIntervention.freightPerKg ?? 0).toFixed(4))
   }));
 
   // Button handlers
@@ -55,6 +56,9 @@ const FinalQuotation = () => {
     exportToExcel(materialItems, costBreakdowns, humanIntervention);
   };
 
+  const handleDownloadPDF = () => {
+    exportToPDF(materialItems, costBreakdowns, humanIntervention, projectDetails);
+  };
   const handleFinalQuotationCost = () => {
     // Logic: start over and go home (as a reset for a new process)
     navigate("/");
@@ -119,8 +123,13 @@ const FinalQuotation = () => {
           </Button>
           <Button onClick={handleDownloadExcel} variant="outline">
             <Download className="h-4 w-4 mr-2" />
-            Download the Excel
+            Download Excel
           </Button>
+          {/* <Button onClick={handleDownloadPDF} variant="outline">
+            <Download className="h-4 w-4 mr-2" />
+            Download PDF
+          </Button> */}
+
           <Button onClick={handleFinalQuotationCost}>
             <DollarSign className="h-4 w-4 mr-2" /> Final quotation cost
           </Button>

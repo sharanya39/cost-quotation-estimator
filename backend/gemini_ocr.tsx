@@ -119,6 +119,7 @@ You must strictly follow the schema and instructions outlined below.
 - **Output only JSON** — no additional text, no explanations, no formatting errors.
 - **If extraction fails due to missing or incomplete data**, set the field to \`null\` and move on.
 - Only consider the maximum bounding box dimensions (length, width, thickness) when estimating volume for unit weight.
+- Add a flag to the maximum bounding box dimneions saying "is_bounding_dimension": true.
 Ignore internal feature dimensions (e.g., hole spacings, slot spacings) for this calculation. 
 
 
@@ -176,11 +177,14 @@ If the "unit_weight_kg" field is **missing** in the drawing:
   "dimensions": [
     {
       "dimension": "150mm x 100mm x 5mm",
-      "tolerance": null
+      "tolerance": null,
+      "is_bounding_dimension": true
+
     },
     {
       "dimension": "Overall thickness: 5mm",
-      "tolerance": "+/-0.05mm"
+      "tolerance": "+/-0.05mm",
+      "is_bounding_dimension": false
     }
   ],
   "holes": [
@@ -212,7 +216,7 @@ If the "unit_weight_kg" field is **missing** in the drawing:
         }
     ],
   };
-  const model = 'gemini-2.5-pro-preview-03-25';
+  const model = 'gemini-2.0-flash';
 
 const fs = require('fs').promises;
 
