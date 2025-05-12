@@ -68,19 +68,39 @@ const MaterialCostEstimation = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const [opRes, pricingRes] = await Promise.all([
-          fetch('/backend/output/op.json'),
-          fetch('/backend/output/pricing.json')
-        ]);
+        // Fetch op-data
+        const opResponse = await fetch('http://localhost:3000/api/op-data');
+        if (!opResponse.ok) throw new Error(`Failed to fetch op data: ${opResponse.statusText}`);
+        const opResult = await opResponse.json();
+        
+        // Set op data
+        setOpData({
+          material: opResult.material,
+          unit_weight_kg: opResult.unit_weight_kg
+        });
 
-        if (!opRes.ok) throw new Error(`Failed to fetch op.json: ${opRes.statusText}`);
-        if (!pricingRes.ok) throw new Error(`Failed to fetch pricing.json: ${pricingRes.statusText}`);
+        // Fetch material-price using material name as code
+        const materialResponse = await fetch(`http://localhost:3000/api/material-price/${opResult.material}`);
+        if (!materialResponse.ok) throw new Error(`Failed to fetch material price: ${materialResponse.statusText}`);
+        const materialResult = await materialResponse.json();
 
-        const opJson: OpData = await opRes.json();
-        const pricingJson: PricingData = await pricingRes.json();
+        if (!materialResult.success) throw new Error(materialResult.error || 'Failed to load material price');
 
-        setOpData(opJson);
-        setPricingData(pricingJson);
+        // Set pricing data
+        setPricingData({
+          raw_materials: [{
+            code: opResult.material,
+            price: materialResult.price
+          }]
+        });
+        console.log('Fetched material data:', {
+          code: opResult.material,
+          price: materialResult.price,
+          date: materialResult.date,
+          name: materialResult.name,
+          source: materialResult.source,
+          unit: materialResult.unit
+        });
 
       } catch (err: any) {
         console.error("Error fetching data:", err);
@@ -108,6 +128,14 @@ const MaterialCostEstimation = () => {
       const pricingItem = pricingData.raw_materials.find(p => p.code === materialGrade);
       const pricePerKg = pricingItem ? pricingItem.price : 0; // Default to 0 if not found
       const partWeight = currentItem.unitWeight; // Use weight from context (potentially updated in BOM)
+
+      console.log('Setting calculation inputs:', {
+        materialGrade,
+        pricePerKg,
+        partWeight,
+        wastePercentage: humanIntervention.wastePercentage,
+        firmPricePercentage: humanIntervention.firmPricePercentage
+      });
 
       setCalculationInputs(prev => ({
         ...prev,

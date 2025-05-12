@@ -15,10 +15,15 @@ const ExtractDetails = () => {
   const navigate = useNavigate();
   var { engineeringDetails, setEngineeringDetails, accessLevel } = useCostEstimation();
   accessLevel = 'premium';
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchOpData = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        const response = await fetch('/backend/output/op.json');
+        const response = await fetch('http://localhost:3000/api/op-data');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -52,7 +57,11 @@ const ExtractDetails = () => {
           surfaceTreatment: data.surface_treatment
         }]);
       } catch (error) {
-        console.error('Error loading op.json:', error);
+        console.error('Error loading op-data:', error);
+        setError('Failed to load engineering details. Please try again.');
+        setEngineeringDetails([]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -102,7 +111,13 @@ const ExtractDetails = () => {
 
         {viewType === 'technical' ? (
           <div className="space-y-6">
-            {engineeringDetails.length > 0 ? (
+            {isLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+              </div>
+            ) : error ? (
+              <div className="text-center py-8 text-red-500">{error}</div>
+            ) : engineeringDetails.length > 0 ? (
               engineeringDetails.map((detail, index) => (
                 <TechnicalDetailsCard 
                   key={index} 

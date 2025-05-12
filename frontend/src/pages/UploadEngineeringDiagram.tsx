@@ -47,7 +47,7 @@ const UploadEngineeringDiagram = () => {
       formData.append('file', file);
       formData.append('filename', file.name);
 
-      const response = await fetch('http://localhost:3000/api/upload-diagram', {
+      const response = await fetch('/api/upload-diagram', {
         method: 'POST',
         body: formData,
       });

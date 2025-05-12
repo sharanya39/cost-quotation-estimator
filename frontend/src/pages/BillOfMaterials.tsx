@@ -25,35 +25,47 @@ const BillOfMaterials = () => {
         ]
   );
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const fetchOpData = async () => {
       try {
-        const response = await fetch('/backend/output/op.json');
+        const response = await fetch('http://localhost:3000/api/op-data');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
         
-        if (items.length === 1 && !items[0].itemPartNumber && !items[0].itemDescription) {
-          setItems([
-            {
-              itemNumber: 1,
-              itemPartNumber: data.drawing_number,
-              itemDescription: data.part_name,
-              unitWeight: data.unit_weight_kg,
-              quantity: 0,
-              totalWeight: 0,
-            },
-          ]);
-        }
+        setItems([
+          {
+            itemNumber: 1,
+            itemPartNumber: data.drawing_number,
+            itemDescription: data.part_name,
+            unitWeight: data.unit_weight_kg,
+            quantity: 0,
+            totalWeight: 0,
+          },
+        ]);
       } catch (error) {
         console.error('Error loading op.json:', error);
-        // Silently fall back to manual entry mode by keeping the default empty item
+        // Fallback to empty item if API fails
+        setItems([
+          {
+            itemNumber: 1,
+            itemPartNumber: "",
+            itemDescription: "",
+            unitWeight: 0,
+            quantity: 0,
+            totalWeight: 0,
+          },
+        ]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchOpData();
-  }, [items]);
+  }, []);
 
   const handleInputChange = (index: number, field: string, value: string | number) => {
     const updatedItems = [...items];
@@ -142,11 +154,17 @@ const BillOfMaterials = () => {
           </p>
         </div>
         
-        <MaterialTable
-          items={items}
-          onInputChange={handleInputChange}
-          onRemoveItem={removeItem}
-        />
+        {isLoading ? (
+          <div className="flex justify-center items-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          </div>
+        ) : (
+          <MaterialTable
+            items={items}
+            onInputChange={handleInputChange}
+            onRemoveItem={removeItem}
+          />
+        )}
         
         <div className="flex justify-between">
           <Button variant="outline" onClick={addItem} className="flex items-center">

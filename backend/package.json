@@ -1,0 +1,20 @@
+{
+  "name": "cost-quotation-estimator-backend",
+  "version": "1.0.0",
+  "description": "Backend for the Cost Quotation Estimator",
+  "type": "module",
+  "main": "api.ts",
+  "scripts": {
+    "dev": "bun run api.ts",
+    "start": "bun run api.ts"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.2.0",
+    "@google/genai": "^0.13.0",
+    "dotenv": "^16.3.1",
+    "elysia": "^1.0.0"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  }
+}
