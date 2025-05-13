@@ -11,6 +11,9 @@ import {
 } from '@google/genai';
 
 export async function main(filePath: string) {
+  if (!process.env.GEMINI_API_KEY) {
+    throw new Error('GEMINI_API_KEY environment variable is required');
+  }
   const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
   });
