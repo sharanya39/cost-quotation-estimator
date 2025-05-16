@@ -14,10 +14,11 @@ const Navigation = () => {
     { name: "Bill of Materials", path: "/bill-of-materials" },
     { name: "Human Intervention", path: "/human-intervention" },
     // { name: "Engineering Drawings", path: "/engineering-drawings" },
-    { name: "Extract Details", path: "/extract-details" },
+    // { name: "Extract Details", path: "/extract-details" },
     // ...(accessLevel === "premium" ? [
       { name: "Material Cost", path: "/material-cost" },
-      { name: "Manufacturing Cost", path: "/manufacturing-cost-1" },
+      { name: "Manufacturing Steps", path: "/manufacturing-cost-1" },
+      { name: "Manufacturing Cost", path: "/manufacturing-cost-2" },
       { name: "Production Cost", path: "/production-cost" },
       { name: "Should Cost", path: "/should-cost" },
       { name: "Quotation Cost", path: "/quotation-cost" },

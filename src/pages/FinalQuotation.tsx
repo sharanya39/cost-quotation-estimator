@@ -28,13 +28,13 @@ const FinalQuotation = () => {
     description: item.itemDescription,
     weight: item.unitWeight,
     quantity: item.quantity,
-    l1Cost: Number((costBreakdowns[idx]?.l1CostPerKg ?? 0).toFixed(4)),
-    l2Cost: Number((costBreakdowns[idx]?.l2CostPerKg ?? 0).toFixed(4)),
-    l3Cost: Number((costBreakdowns[idx]?.l3CostPerKg ?? 0).toFixed(4)),
-    l4Cost: Number((costBreakdowns[idx]?.l4CostPerKg ?? 0).toFixed(4)),
-    l5Cost: Number((costBreakdowns[idx]?.l5CostPerKg ?? 0).toFixed(4)),
-    totalPerPiece: Number((costBreakdowns[idx]?.l5CostPerPiece ?? 0).toFixed(4)),
-    freight: Number((humanIntervention.freightPerKg ?? 0).toFixed(4))
+    l1Cost: Number((costBreakdowns[idx]?.l1CostPerKg ?? 0).toFixed(2)),
+    l2Cost: Number((costBreakdowns[idx]?.l2CostPerKg ?? 0).toFixed(2)),
+    l3Cost: Number((costBreakdowns[idx]?.l3CostPerKg ?? 0).toFixed(2)),
+    l4Cost: Number((costBreakdowns[idx]?.l4CostPerKg ?? 0).toFixed(2)),
+    l5Cost: Number((costBreakdowns[idx]?.l5CostPerKg ?? 0).toFixed(2)),
+    totalPerPiece: Number((costBreakdowns[idx]?.l5CostPerPiece ?? 0).toFixed(2)),
+    freight: Number((humanIntervention.freightPerKg ?? 0).toFixed(2))
   }));
 
   // Button handlers

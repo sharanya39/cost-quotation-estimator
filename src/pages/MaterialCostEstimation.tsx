@@ -69,7 +69,7 @@ const MaterialCostEstimation = () => {
       setError(null);
       try {
         const [opRes, pricingRes] = await Promise.all([
-          fetch('/backend/output/op.json'),
+          fetch('backend/backend/output/op.json'),
           fetch('/backend/output/pricing.json')
         ]);
 
