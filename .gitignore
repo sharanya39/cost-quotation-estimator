@@ -23,3 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 extras
+*.pdf
+backend/backend/data/diagrams/inp.pdf
+backend/backend/output/op.json
